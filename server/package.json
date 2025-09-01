@@ -1,0 +1,19 @@
+{
+  "name": "tbsp-server",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client:build": "bun build ../client/src/index.ts > index.js",
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@elysiajs/static": "^1.3.0",
+    "elysia": "latest"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "typescript": "^5.9.2"
+  },
+  "module": "src/index.js"
+}
