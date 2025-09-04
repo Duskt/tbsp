@@ -10,7 +10,8 @@ in pkgs.mkShell {
   # we use its 'isolated install mode' for deterministic CLI dependencies
   packages = with pkgs; [
     bun 
-    nodejs_24 # vite uses node; bun is compatible with nodejs 22, but vite simply insists on better
+    nodejs_24 # optional (suppress warning): Vite complains that Bun's NodeJS version is old
+    postgresql
   ];
 
   # build deps for this shell 
