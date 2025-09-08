@@ -12,5 +12,12 @@
   "workspaces": [
     "server",
     "client"
-  ]
+  ],
+  "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitejs/plugin-vue-jsx": "^5.1.1"
+  },
+  "devDependencies": {
+    "vite-plugin-vue-devtools": "^8.0.1"
+  }
 }
