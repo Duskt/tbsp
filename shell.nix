@@ -27,7 +27,7 @@ in pkgs.mkShell {
     bun install --silent;
 
     echo "Setting up PostgreSQL. I will need privileged access in order to use the system user 'postgres'.";
-
+    
     # setup system user. i don't check if user is present but incorrectly setup
     if test ! id postgres &>/dev/null; then # if postgres user is missing
 	    if id -g postgres &>/dev/null; then # if postgres group is present 
@@ -35,7 +35,11 @@ in pkgs.mkShell {
 	    else
 		    sudo useradd --system --no-create-home --user-group postgres;
 	    fi
-
+    fi
+    
+    sudo mkdir -p $PGROOT;
+    sudo chown postgres $PGROOT;
+    sudo chgrp postgres $PGROOT;
     # initdb and start daemon
     # unquoted heredoc: substitute all variables before switching user.
     # this includes all the $(which ...) commands, replaced with their absolute path
