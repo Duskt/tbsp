@@ -21,6 +21,7 @@ in pkgs.mkShell {
   PGROOT = "/home/postgres";
   PGDATA = "/home/postgres/tbsp-db";
   PGSOCKETS = "/run/postgresql";
+  TBSP_DBNAME = "TBSP";
   # commands to run upon entering nix shell environment
   # territory of the postgresql daemon...
   shellHook = ''
@@ -51,6 +52,7 @@ in pkgs.mkShell {
 	    $(which pg_ctl) -D $PGDATA start &>/dev/null;
 	    if [ \$? -eq 0 ]; then echo 'Started postgres daemon (background program).'; else echo 'ERROR: Postgres server failed to start.'; fi
 	    $(which psql) postgres -tXAc "SELECT 1 FROM pg_roles WHERE rolname='$USER'" | grep -q 1 || $(which createuser) --createdb $USER;
+	    $(which psql) postgres -tXAc "SELECT 1 FROM pg_database WHERE datname='$TBSP_DBNAME'" | grep -q 1 || $(which createdb) $TBSP_DBNAME; 
 EOF
     # stop daemon upon exiting shell
     trap 'echo Stopping server...; sudo su postgres -c "$(which pg_ctl) -D $PGDATA stop"' EXIT;
