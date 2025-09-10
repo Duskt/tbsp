@@ -23,11 +23,7 @@ in pkgs.mkShell {
   # commands to run upon entering nix shell environment
   # territory of the postgresql daemon...
   shellHook = ''
-    echo "Installing local bun packages...";
-    bun install --silent;
-
     echo "Setting up PostgreSQL. I will need privileged access in order to use the system user 'postgres'.";
-    
     # setup system user. i don't check if user is present but incorrectly setup
     if test ! id postgres &>/dev/null; then # if postgres user is missing
 	    if id -g postgres &>/dev/null; then # if postgres group is present 
@@ -45,11 +41,17 @@ in pkgs.mkShell {
     # this includes all the $(which ...) commands, replaced with their absolute path
     sudo su postgres -c "$SHELL" <<EOF 
 	    cd $PGROOT;
-	    if [ ! -d $PGDATA ]; then $(which initdb) -D $PGDATA; fi
-	    $(which pg_ctl) -D $PGDATA -o "--unix-socket-directories=$PGROOT" start
+	    echo 'Setting up database at $PGDATA...';
+	    if [ ! -d $PGDATA ]; then $(which initdb) -D $PGDATA &>/dev/null; fi
+	    $(which pg_ctl) -D $PGDATA -o "--unix-socket-directories=$PGROOT" start &>/dev/null;
+	    if test $? -eq 0; then echo 'Started postgres daemon (background program).'; else 'ERROR: Postgres server failed to start.'; fi
 EOF
     # stop daemon upon exiting shell
     trap 'sudo su postgres -c "$(which pg_ctl) -D $PGDATA stop"' EXIT;
+
+    echo "Installing local bun packages...";
+    bun install --silent;
+
     echo "Developer environment ready. Good luck out there o7";
   '';
 }
