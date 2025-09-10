@@ -20,6 +20,7 @@ in pkgs.mkShell {
 
   PGROOT = "/home/postgres";
   PGDATA = "/home/postgres/tbsp-db";
+  PGSOCKETS = "/run/postgresql";
   # commands to run upon entering nix shell environment
   # territory of the postgresql daemon...
   shellHook = ''
@@ -36,6 +37,9 @@ in pkgs.mkShell {
     sudo mkdir -p $PGROOT;
     sudo chown postgres $PGROOT;
     sudo chgrp postgres $PGROOT;
+    sudo mkdir -p $PGSOCKETS;
+    sudo chown postgres $PGSOCKETS;
+    sudo chgrp postgres $PGSOCKETS;
     # initdb and start daemon
     # unquoted heredoc: substitute all variables before switching user.
     # this includes all the $(which ...) commands, replaced with their absolute path
@@ -43,7 +47,7 @@ in pkgs.mkShell {
 	    cd $PGROOT;
 	    echo 'Setting up database at $PGDATA...';
 	    if [ ! -d $PGDATA ]; then $(which initdb) -D $PGDATA &>/dev/null; fi
-	    $(which pg_ctl) -D $PGDATA -o "--nix-socket-directories=$PGROOT" start &>/dev/null;
+	    $(which pg_ctl) -D $PGDATA start &>/dev/null;
 	    if [ \$? -eq 0 ]; then echo 'Started postgres daemon (background program).'; else echo 'ERROR: Postgres server failed to start.'; fi
 EOF
     # stop daemon upon exiting shell
