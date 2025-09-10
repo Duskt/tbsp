@@ -43,12 +43,14 @@ in pkgs.mkShell {
     # initdb and start daemon
     # unquoted heredoc: substitute all variables before switching user.
     # this includes all the $(which ...) commands, replaced with their absolute path
+    # Creates POSTGRESQL user if one doesn't exist (https://stackoverflow.com/a/8546783)
     sudo su postgres -c "$SHELL" <<EOF 
 	    cd $PGROOT;
 	    echo 'Setting up database at $PGDATA...';
 	    if [ ! -d $PGDATA ]; then $(which initdb) -D $PGDATA &>/dev/null; fi
 	    $(which pg_ctl) -D $PGDATA start &>/dev/null;
 	    if [ \$? -eq 0 ]; then echo 'Started postgres daemon (background program).'; else echo 'ERROR: Postgres server failed to start.'; fi
+	    $(which psql) postgres -tXAc "SELECT 1 FROM pg_roles WHERE rolname='$USER'" | grep -q 1 || $(which createuser) --createdb $USER;
 EOF
     # stop daemon upon exiting shell
     trap 'echo Stopping server...; sudo su postgres -c "$(which pg_ctl) -D $PGDATA stop"' EXIT;
