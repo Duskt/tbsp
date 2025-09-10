@@ -43,11 +43,11 @@ in pkgs.mkShell {
 	    cd $PGROOT;
 	    echo 'Setting up database at $PGDATA...';
 	    if [ ! -d $PGDATA ]; then $(which initdb) -D $PGDATA &>/dev/null; fi
-	    $(which pg_ctl) -D $PGDATA -o "--unix-socket-directories=$PGROOT" start &>/dev/null;
-	    if test $? -eq 0; then echo 'Started postgres daemon (background program).'; else 'ERROR: Postgres server failed to start.'; fi
+	    $(which pg_ctl) -D $PGDATA -o "--nix-socket-directories=$PGROOT" start &>/dev/null;
+	    if [ \$? -eq 0 ]; then echo 'Started postgres daemon (background program).'; else echo 'ERROR: Postgres server failed to start.'; fi
 EOF
     # stop daemon upon exiting shell
-    trap 'sudo su postgres -c "$(which pg_ctl) -D $PGDATA stop"' EXIT;
+    trap 'echo Stopping server...; sudo su postgres -c "$(which pg_ctl) -D $PGDATA stop"' EXIT;
 
     echo "Installing local bun packages...";
     bun install --silent;
