@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+# check=error=true
+FROM postgres:17
+
+# copy over everything (excl. ``.dockerignore``)
+WORKDIR /app
+COPY . .
+
+# if copying files from windows: remove carriage returns from shell scripts
+RUN <<EOF
+if test -e "$(find . -maxdepth 1 -name '*.sh' -print -quit)"; then
+	for f in *.sh; do 
+		tr -d '\r' < "$f" > "$f.tmp"; mv "$f.tmp" "$f"; 
+	done; 
+fi;
+EOF
+
+# check that everything is where we expect it to be
+RUN ls | grep server;
+RUN ls | grep client;
+
+RUN apt-get update;
+RUN apt-get install -y curl unzip;
+RUN curl -fsSL https://bun.com/install | bash;
+RUN mv /root/.bun/bin/bun /usr/bin/bun;
+RUN ln -s /usr/bin/bun /usr/bin/bunx;
+
+CMD ["bun", "dev"]
