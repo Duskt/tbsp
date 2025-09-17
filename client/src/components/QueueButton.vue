@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { RouterLink, RouterView } from 'vue-router'
 import { type Theme } from '../../../src/theme';
 
 const props = defineProps<{ theme: Theme; ws: WebSocket }>();
@@ -16,6 +17,7 @@ function joinQueue() {
   <button @click="joinQueue()">
     <span>{{ props.theme.name }}</span>
     <p>Players Queued: {{playersQueued}}</p>
+    <RouterLink to="/chatroom">link text</RouterLink>
   </button>
 </template>
 
