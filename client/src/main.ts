@@ -12,16 +12,3 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
-
-class WS extends WebSocket {
-    onmessage = (e: MessageEvent) => {
-	console.log(e.data);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', (e) => {
-    console.log('all working on the client-side!');
-    const ws = new WS('/');
-    console.log(ws);
-    ws.addEventListener('message', ws.onmessage);
-}, {once: true});
