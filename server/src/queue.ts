@@ -31,7 +31,12 @@ class QueueManager {
     };
     addToQueue: WSHandler = (ws, msg: string) => {
 	let q = this.getQueue(msg);
+
+	// invalid theme_id
 	if (q === undefined) { ws.send("ERR"); return};
+	// prevent duplicates
+	if ( q.waiting.map((v) => v.id).includes(ws.id) ) { ws.send("WARN: you're already queueing"); return }
+
 	q.load(ws, (queuers) => {
 	    queuers.forEach((v) => {v.send(`You joined game ${q.theme.id}.`)});
 	});
