@@ -6,9 +6,10 @@ const PORT = 9001;
 const CLIROOT = "../client/dist/";
 
 const app = new Elysia()
-    // serving file without the closure gives todo error?
-    .get('/', () => file(`${CLIROOT}/index.html`))
 
+    // HTTP Routing is handled clientside ('Single Page Application' paradigm)
+    // so we only need to provide index and assets
+    .get('/*', () => file(`${CLIROOT}/index.html`))
     .use(staticPlugin({ assets: `${CLIROOT}/assets`, prefix: "/assets" }))
 
     // lobby connections 

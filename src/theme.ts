@@ -18,5 +18,6 @@ export class Theme implements ThemeProperties {
 
 const vanilla = new Theme({ id: 'vanilla', name: "Vanilla"});
 const classic = new Theme({ id: 'classic', name: "Classic"});
-const themes = [vanilla, classic];
-export default themes;
+
+const defaultThemes = [vanilla, classic];
+export default defaultThemes;
