@@ -6,7 +6,7 @@
   "license": "ISC",
   "author": "Duskt (duskt@github.com)",
   "scripts": {
-    "dev": "echo 'Building client...' && bun run --cwd=client build; bun run --cwd=server dev;",
+    "dev": "bun run --cwd=client build; bun run --cwd=server src/index.ts;",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "workspaces": [
