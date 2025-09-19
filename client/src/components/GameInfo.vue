@@ -1,16 +1,38 @@
 <script setup>
-import { ref } from 'vue'
-const time_left = ref(300);
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+
 const day = ref(1);
 const role = ref("MAFIA");
 const players = ref(16)
+const end_time = ref(Date.now() + 5 * 60 * 1000)
+const now = ref(Date.now())
+
+let intervalId = null
+
+onMounted(() => {
+  intervalId = setInterval(() => {
+    now.value = Date.now()
+    if (now.value >= end_time.value) {
+      clearInterval(intervalId)
+    }
+  }, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(intervalId)
+})
+
+// Time remaining in seconds
+const time_left = computed(() => {
+    const diff = end_time.value - now.value
+    return diff > 0 ? Math.floor(diff / 1000) : 0
+})
 
 
-function show_time(time){
-    let minute = Math.floor(time/60)
-    let second = time-(minute*60)
-
-    return `${minute}:${second}`
+function show_time(){
+    let minute = Math.floor(time_left.value/60)
+    let second = time_left.value % 60
+    return `${String(minute).padStart(1,"0")}:${String(second).padStart(2,"0")}`
 }
 </script>
 
@@ -21,7 +43,7 @@ function show_time(time){
             <p>{{ role }}</p>
         </div>
         <p>Day: {{ day}}</p>
-        <p>Time until nightfall: {{ show_time(time_left)}}</p>
+        <p>Time until nightfall: {{ show_time()}}</p>
         <p>Players remaining: {{ players }}</p>
     </div>
 

@@ -1,6 +1,16 @@
 <script setup>
 import ChatBox from "../components/ChatBox.vue"
 import GameInfo from "../components/GameInfo.vue"
+import useWS from '../components/useWS.ts'
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const {ws} = useWS("/messages", (msg) => {
+  if (! msg.data.startsWith('You')) { console.warn("Unknown WS message:", msg.data); return }
+  router.push('/chatroom');
+});
+console.log((ws))
+
 
 </script>
 
@@ -8,7 +18,7 @@ import GameInfo from "../components/GameInfo.vue"
   <main class=flex-container>
 
     <GameInfo/>
-    <ChatBox/>
+    <ChatBox :ws='ws'/>
     
   </main>
 </template>

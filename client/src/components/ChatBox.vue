@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import InputBox from './chat/InputBox.vue'
 // Unique ID counter
@@ -6,12 +6,7 @@ let id = 0;
 const dayTime = ref(true);
 const new_message = ref('');
 const chat_box = ref([{id:id++, text:"OGC"}]);
-
-function send_message() {
-  chat_box.value.push({ id: id++, text: new_message.value });
-  new_message.value = '';
-}
-
+const { ws } = defineProps<{ ws: WebSocket }>();
 </script>
 
 <template>
@@ -26,7 +21,7 @@ function send_message() {
         </li>
       </ul>
 
-      <InputBox/>
+      <InputBox :ws='ws'/>
     </div>
 </template>
 
