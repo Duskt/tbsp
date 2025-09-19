@@ -16,13 +16,27 @@ const { ws } = useWS('/', (msg) => {
 </script>
 
 <template>
-  <main>
-    <table>
-      <tr v-for="t in themes">
-        <td>
-          <QueueButton :ws="ws" :theme="t"/>
-        </td>
-      </tr>
-    </table>
-  </main>
+  <ol>
+    <li v-for="t in themes">
+      <QueueButton :ws="ws" :theme="t"/>
+    </li>
+  </ol>
 </template>
+
+<style scoped>
+
+ol {
+  height: 100%;
+  width: 100%;
+  padding-block: 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+li {
+  display: flex;
+  justify-content: center;
+}
+
+</style>

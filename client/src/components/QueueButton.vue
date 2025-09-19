@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { RouterLink, RouterView } from 'vue-router'
 import { type Theme } from '../../../src/theme';
+import palette from '../style.ts';
 
 const { theme, ws } = defineProps<{ theme: Theme; ws: WebSocket }>();
 let playersQueued = ref(0);
@@ -20,4 +21,21 @@ function joinQueue() {
 </template>
 
 <style scoped>
+button {
+  background-color: v-bind("palette.black[1]");
+  padding: 8px 24px;
+  border: none;
+}
+
+span {
+  color: white;
+  font-size: 24px;
+  font-family: 'Kanit';
+}
+
+p {
+  color: v-bind("palette.black[3]");
+  font-size: 12px;
+  padding-bottom: 8px;
+}
 </style>
