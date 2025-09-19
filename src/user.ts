@@ -1,6 +1,6 @@
 
 type ID = number;
-class User{
+export class User{
     username: string;
     passwordHash: string;
     userId: ID;

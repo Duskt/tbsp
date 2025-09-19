@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import InputBox from './chat/InputBox.vue'
+import InputBox from '@client/components/chat/InputBox.vue'
 // Unique ID counter
 let id = 0;
 const dayTime = ref(true);

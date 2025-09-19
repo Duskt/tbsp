@@ -15,10 +15,11 @@ console.log("readyState:", ws.readyState);
 function send_message() {
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(new_message.value);
+    new_message.value = '';
   } else {
     console.warn('WebSocket not ready', ws.readyState);
     ws.onopen = () => {
-      console.log("we send it anyway")
+      console.log("we send it anyway");
       ws.send(new_message.value);
       ws.send("Hello server!");
 };

@@ -1,7 +1,7 @@
 <script setup>
-import ChatBox from "../components/ChatBox.vue"
-import GameInfo from "../components/GameInfo.vue"
-import useWS from '../components/useWS.ts'
+import ChatBox from "@client/components/ChatBox.vue"
+import GameInfo from "@client/components/GameInfo.vue"
+import useWS from '@client/components/useWS.ts'
 import { useRouter } from 'vue-router';
 
 const router = useRouter();

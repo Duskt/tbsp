@@ -2,10 +2,10 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
-import QueueButton from '../components/QueueButton.vue';
-import useWS from '../components/useWS.ts';
+import QueueButton from '@client/components/QueueButton.vue';
+import useWS from '@client/components/useWS.ts';
 
-import themes from '../../../src/theme.ts';
+import themes from '@/theme.ts';
 
 const router = useRouter();
 const { ws } = useWS('/', (msg) => {
