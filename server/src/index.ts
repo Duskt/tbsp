@@ -1,6 +1,6 @@
 import { Elysia, file } from "elysia";
 import staticPlugin from "@elysiajs/static";
-import queueManager from "./queue";
+import queueManager from "@server/queue";
 
 const PORT = 9001;
 const CLIROOT = "../client/dist/";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import palette from './style.ts';
+import palette from '@client/style.ts';
 </script>
 
 <template ref="app">
