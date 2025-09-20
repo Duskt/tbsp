@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LobbyView from '../views/Lobby.vue'
-import ChatView from '../views/ChatRoom.vue'
+import LobbyView from '@client/views/Lobby.vue'
+import ChatView from '@client/views/ChatRoom.vue'
 
 
 

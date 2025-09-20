@@ -8,19 +8,17 @@ const chat_box = ref([{id:id++, text:"OGC"}]);
 
 
 const { ws } = defineProps<{ ws:WebSocket }>();
-console.log("props.ws:", ws);
-console.log("type:", typeof ws);
-console.log("readyState:", ws.readyState);
 
+// function sends the chat message to the server
 function send_message() {
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(new_message.value);
+    new_message.value = '';
   } else {
     console.warn('WebSocket not ready', ws.readyState);
     ws.onopen = () => {
-      console.log("we send it anyway")
       ws.send(new_message.value);
-      ws.send("Hello server!");
+      
 };
   }
 }

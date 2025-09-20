@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { RouterLink, RouterView } from 'vue-router'
-import { type Theme } from '../../../src/theme';
-import palette from '../style.ts';
+import { type Theme } from '@/theme';
+import palette from '@client/style.ts';
 
 const { theme, ws } = defineProps<{ theme: Theme; ws: WebSocket }>();
 let playersQueued = ref(0);
