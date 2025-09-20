@@ -1,6 +1,7 @@
 {
   "name": "tbsp-client",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "bun --cwd=\"$(realpath ./..)\" dev",
     "build": "bunx --bun vite build --mode development"
@@ -17,6 +18,8 @@
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/tsconfig": "^0.7.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitejs/plugin-vue-jsx": "^5.1.1",
     "eslint": "^9.31.0",
     "eslint-plugin-playwright": "^2.2.0",
     "eslint-plugin-vue": "~10.3.0",
@@ -25,6 +28,7 @@
     "prettier": "3.6.2",
     "typescript": "^5.9.2",
     "vite": "^7.1.4",
-    "vue-tsc": "^3.0.4"
+    "vue-tsc": "^3.0.4",
+    "vite-plugin-vue-devtools": "^8.0.1"
   }
 }

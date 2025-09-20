@@ -1,7 +1,10 @@
 # Create a development environment (all necessary commands installed and on PATH) for using both the client and the server (all you need for the server is bun right now).
 let
   # too many root-level config files for a flake.nix & .lock file.
-  pkgs = import <nixpkgs> { }; # tested on 25.11
+  pkgs = import (fetchTarball {
+    url = "http://github.com/NixOS/nixpkgs/archive/8eaee110344796db060382e15d3af0a9fc396e0e.tar.gz"; # nixos-unstable as of this commit
+    sha256 = "1k5zyljqg8fp99hzgjkvkawhmbwlfsnz4viisfcfdjyky9zrc8c8";
+  }) { };
 in
 pkgs.mkShell {
 
@@ -10,7 +13,7 @@ pkgs.mkShell {
   # bun implements an npm-like local package manager which we use for most things
   # we use its 'isolated install mode' for deterministic CLI dependencies
   packages = with pkgs; [
-    bun
+    bun # 1.2.22
     prettier
     postgresql
   ];
