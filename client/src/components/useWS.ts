@@ -4,10 +4,15 @@ import { ref, onMounted, onUnmounted } from 'vue'
  * Using this 'composable' function in a component will allow access
  * to a WS connection which exists only when the component is rendered.
  */
-export default function useWS(path: string = "/", onmessage: (msg: MessageEvent) => void = () => {}) {
+export default function useWS(
+  path: string = '/',
+  onmessage: (msg: MessageEvent) => void = () => {},
+) {
   const ws = new WebSocket(path)
   ws.onmessage = onmessage
-  onUnmounted(() => { ws.close();})
+  onUnmounted(() => {
+    ws.close()
+  })
 
   return { ws }
 }

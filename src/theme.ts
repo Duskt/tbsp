@@ -1,6 +1,6 @@
 interface ThemeProperties {
-    id: string,
-    name: string
+  id: string
+  name: string
 }
 
 /*
@@ -8,16 +8,16 @@ interface ThemeProperties {
  * alter certain mechanics like voting.
  */
 export class Theme implements ThemeProperties {
-    id: string;
-    name: string;
-    constructor({id, name}: ThemeProperties) {
-	this.id = id;
-	this.name = name;
-    }
+  id: string
+  name: string
+  constructor({ id, name }: ThemeProperties) {
+    this.id = id
+    this.name = name
+  }
 }
 
-const vanilla = new Theme({ id: 'vanilla', name: "Vanilla"});
-const classic = new Theme({ id: 'classic', name: "Classic"});
+const vanilla = new Theme({ id: 'vanilla', name: 'Vanilla' })
+const classic = new Theme({ id: 'classic', name: 'Classic' })
 
-const defaultThemes = [vanilla, classic];
-export default defaultThemes;
+const defaultThemes = [vanilla, classic]
+export default defaultThemes

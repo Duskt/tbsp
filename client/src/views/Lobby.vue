@@ -1,30 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-import QueueButton from '@client/components/QueueButton.vue';
-import useWS from '@client/components/useWS.ts';
+import QueueButton from '@client/components/QueueButton.vue'
+import useWS from '@client/components/useWS.ts'
 
-import themes from '@/theme.ts';
+import themes from '@/theme.ts'
 
-const router = useRouter();
+const router = useRouter()
 const { ws } = useWS('/', (msg) => {
-  if (! msg.data.startsWith('You')) { console.warn("Unknown WS message:", msg.data); return }
-  router.push('/chatroom');
-});
-
+  if (!msg.data.startsWith('You')) {
+    console.warn('Unknown WS message:', msg.data)
+    return
+  }
+  router.push('/chatroom')
+})
 </script>
 
 <template>
   <ol>
     <li v-for="t in themes">
-      <QueueButton :ws="ws" :theme="t"/>
+      <QueueButton :ws="ws" :theme="t" />
     </li>
   </ol>
 </template>
 
 <style scoped>
-
 ol {
   height: 100%;
   width: 100%;
@@ -38,5 +39,4 @@ li {
   display: flex;
   justify-content: center;
 }
-
 </style>

@@ -6,10 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
+  plugins: [vue(), vueDevTools()],
   build: {
     minify: false,
   },
@@ -17,7 +14,7 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('../src', import.meta.url)),
       '@client': fileURLToPath(new URL('./src', import.meta.url)),
-      '@server': fileURLToPath(new URL('../server/src', import.meta.url))
+      '@server': fileURLToPath(new URL('../server/src', import.meta.url)),
     },
   },
-});
+})

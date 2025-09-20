@@ -5,48 +5,42 @@ import { Message } from '@/message'
 import InputBox from '@client/components/chat/InputBox.vue'
 // Unique ID counter
 
-let id = 0;
-const dayTime = ref(true);
-const new_message = ref('');
-const chat_box = ref([{id:id++, text:"Created chatroom", username:"LOBBY"}]);
-const { ws } = defineProps<{ ws: WebSocket }>();
+let id = 0
+const dayTime = ref(true)
+const new_message = ref('')
+const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }])
+const { ws } = defineProps<{ ws: WebSocket }>()
 
 // this function receives a message from the server and updates the local chat_box array
 ws.onmessage = (event) => {
-    const { username, messageContent } = JSON.parse(event.data);
-    chat_box.value.push({id:id++, text:messageContent, username:username})
+  const { username, messageContent } = JSON.parse(event.data)
+  chat_box.value.push({ id: id++, text: messageContent, username: username })
 }
 // to call if ws is broken?
 async function requestMessages() {
-  ws.send(JSON.stringify({id:id}))
+  ws.send(JSON.stringify({ id: id }))
 }
 </script>
 
 <template>
-    <div class="chat-box">
-      <ul class="chat-messages">
-        <li
-          v-for="message in chat_box"
-          :key="message.id"
-          class="chat-message"
-        >
-          {{message.username}}: {{ message.text }}
-        </li>
-      </ul>
+  <div class="chat-box">
+    <ul class="chat-messages">
+      <li v-for="message in chat_box" :key="message.id" class="chat-message">
+        {{ message.username }}: {{ message.text }}
+      </li>
+    </ul>
 
-      <InputBox :ws='ws'/>
-    </div>
+    <InputBox :ws="ws" />
+  </div>
 </template>
 
 <style scoped>
-
-
 .chat-box {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   height: 100vh;
-  width:70vw; 
+  width: 70vw;
   padding: 1rem;
   box-sizing: border-box;
   background-color: #0000005f;
@@ -60,7 +54,7 @@ async function requestMessages() {
   overflow-y: auto;
   list-style: none;
   padding: 0;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0 0 1rem 0;
 }
 

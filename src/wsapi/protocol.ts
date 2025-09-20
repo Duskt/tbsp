@@ -1,12 +1,12 @@
 function read(raw: Blob) {
-    return raw.text();
+  return raw.text()
 }
 
 function write({ msg }: { msg: string }) {
-    return new Blob([msg]);
+  return new Blob([msg])
 }
 
-`
+;`
 const protocol = 1;
 
 interface Data {
