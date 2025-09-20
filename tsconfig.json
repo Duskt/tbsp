@@ -29,6 +29,8 @@
     // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
 
     /* Emit */
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     // "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
     // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */

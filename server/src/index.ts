@@ -1,12 +1,8 @@
 import { Elysia, file } from "elysia";
 import staticPlugin from "@elysiajs/static";
-import queueManager from "@server/queue";
-import postgres from 'postgres'
-import { createChatroomsTable, createMessageTable, createUserTable, createUsersInChatroomTable, createFakeData} from "./db";
-import { websocket } from "elysia/dist/ws";
-const sql = postgres({ 
-  database:"TBSP"
- });
+import queueManager from "@server/queue.ts";
+import sql, { createChatroomsTable, createMessageTable, createUserTable, createUsersInChatroomTable, createFakeData} from "@server/db.ts";
+
 createUserTable()
 createChatroomsTable()
 createMessageTable()

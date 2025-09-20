@@ -1,7 +1,14 @@
 import postgres from 'postgres';
 
 const database = import.meta.env.TBSP_DBNAME || "TBSP";
-const sql = postgres({ database });
+let sql: postgres.Sql;
+try {
+    sql = postgres({ database });
+} catch (e) {
+    console.error(`Caught error: ${e}`);
+    throw new Error(`Couldn't connect to postgres database ${database}. You may need to do \`createdb ${database}\` to set it up.`); 
+}
+export default sql;
 
 export async function exampleQuery(age: number) {
     const matches = await sql`

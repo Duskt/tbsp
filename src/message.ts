@@ -1,4 +1,4 @@
-import { User } from '@/user'
+import { User } from '@/user.ts'
 type ID = number;
 export class Message {
     userId: ID
