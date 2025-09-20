@@ -1,6 +1,6 @@
 import { User } from '@/user'
 type ID = number;
-class Message {
+export class Message {
     userId: ID
     body: string
     chatroomId: ID

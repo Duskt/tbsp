@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS usersInChatroom (
 `;
 
 }
-
+// this function is to create some fake data so we can use the databases without errors
 export async function createFakeData(){
   let chatRoomId = '00000000-0000-0000-0000-000000000001';
   let userId = '00000000-0000-0000-0000-000000000001';
