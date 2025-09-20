@@ -46,13 +46,11 @@ client/dist*
 client/*.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+# .vscode is included: to overwrite locally, write in .git/info/exclude instead of here
 .idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-*.tsbuildinfo
-
+**/*.tsbuildinfo
