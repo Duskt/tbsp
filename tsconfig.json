@@ -4,21 +4,19 @@
   // - child projects (`client` and `server`) as defaults
   // - `./src` directly
   "compilerOptions": {
-    "composite": true, // required for this config to be referenced
+    "composite": true, // required for this config to be referenced as a 'TS Project Reference'
 
-    /* Language and Environment */
-    "target": "ES2021",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
+    // javascript language version for transpiled output.
+    // compiling to older versions will need more compatibility code in the output, but support more browsers
+    "target": "ES2022",
+    // module system to use for transpiled output code
+    "module": "ES2022",
+    // how typescript resolves the module from an import during code analysis
+    // this includes server-side code, so we shouldn't use "bundler"
+    "moduleResolution": "node16",
 
-    // determines module system (commonJS vs. ESModules, and version) to output code as in transpiled files
-    // bunders usually want esnext (latest ES version), es2020/2022, or 'preserve'
-    // "module": "ES2022", // move to client
-    "rootDir": "./",                                  /* Specify the root folder within your source files. */
-
-    // how typescript resolves the module from an import.
-    // this includes server-side code, so we cannot use 'bundler'
-    // i don't know if this matters because we use bun, but ideally this should be node16
-    "moduleResolution": "node",
+    "rootDir": "./", 
+    // import aliases
     "paths": {
 	"@client/*": ["./client/src/*"],
 	"@server/*": ["./server/src/*"],
@@ -26,6 +24,7 @@
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
+    // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
     "types": ["bun-types"],                                      /* Specify type package names to be included without being referenced in a source file. */
     // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
 

@@ -1,6 +1,7 @@
 # Create a development environment (all necessary commands installed and on PATH) for using both the client and the server (all you need for the server is bun right now).
 let
-  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-25.05.tar.gz") {};
+  # too many root-level config files for a flake.nix & .lock file. 
+  pkgs = import <nixpkgs> {}; # tested on 25.11
 in pkgs.mkShell {
 
   name = "tbsp-nix-shell";

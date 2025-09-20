@@ -1,5 +1,6 @@
 {
   // relative paths in parent tsconfig are resolved relative to parent
   "extends": "../tsconfig.json",
-  "references": [{ "path": "../" }]
+  "references": [{ "path": "../" }],
+  "include": ["./src/**/*"],
 }

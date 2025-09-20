@@ -1,6 +1,6 @@
-import postgres from 'postgres'
+import postgres from 'postgres';
 
-const database = process.env.TBSP_DBNAME || "TBSP";
+const database = import.meta.env.TBSP_DBNAME || "TBSP";
 const sql = postgres({ database });
 
 export async function exampleQuery(age: number) {
