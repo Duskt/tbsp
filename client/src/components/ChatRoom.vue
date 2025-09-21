@@ -1,6 +1,6 @@
 <script setup>
-import ChatBox from '@client/components/ChatBox.vue'
-import GameInfo from '@client/components/GameInfo.vue'
+import ChatBox from '@client/components/chat/ChatBox.vue'
+import ChatSelectionBar from '@client/components/chat/ChatSelectionBar.vue'
 import useWS from '@client/components/useWS.ts'
 import { useRouter } from 'vue-router'
 
@@ -12,22 +12,23 @@ const { ws } = useWS('/messages', (msg) => {
   }
   router.push('/chatroom')
 })
+
 console.log(ws)
 </script>
 
 <template>
-  <main class="flex-container">
-    <GameInfo />
-    <ChatBox :ws="ws" />
-  </main>
+    <ChatRoomArea class="chat-room-area">
+        <ChatSelectionBar/>
+        <ChatBox :ws="ws" />
+    </ChatRoomArea> 
 </template>
 
 <style scoped>
-.flex-container {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  flex-direction: row;
-  background-color: #535353;
+
+.chat-room-area {
+    display: flex;
+    height: 100vh;
+    width: 70vw;
+    flex-direction: column;
 }
 </style>

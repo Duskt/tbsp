@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LobbyView from '@client/views/Lobby.vue'
-import ChatView from '@client/views/ChatRoom.vue'
+import ChatView from '@client/views/GameRoom.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,8 +12,8 @@ const router = createRouter({
     },
     // should we be lazy loading components?
     {
-      path: '/chatroom',
-      name: 'chatroom',
+      path: '/gameroom',
+      name: 'gameroom',
       component: ChatView,
     },
   ],

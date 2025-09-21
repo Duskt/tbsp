@@ -39,11 +39,13 @@ async function requestMessages() {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100vh;
-  width: 70vw;
   padding: 1rem;
-  box-sizing: border-box;
-  background-color: #0000005f;
+  /* box-sizing: border-box; */
+  background-color: #3D3D3D;
+
+  flex: 1; /* fill remaining space */
+  overflow-y: auto;
+
 }
 
 .chat-messages {
@@ -56,6 +58,7 @@ async function requestMessages() {
   padding: 0;
   color: #ffffff;
   margin: 0 0 1rem 0;
+  font-size: 12px;
 }
 
 .chat-message {

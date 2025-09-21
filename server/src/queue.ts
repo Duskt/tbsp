@@ -1,5 +1,5 @@
 import Elysia from 'elysia'
-import themes, { Theme } from '@/theme'
+import themes, { Theme } from '@/theme.ts'
 
 // surely there is a better way to get these types
 // elysia is all abt its types so i imagine im being too primitive
