@@ -3,18 +3,28 @@
   // this tsconfig affects:
   // - child projects (`client` and `server`) as defaults
   // - `./src` directly
+  // most options are for ./src and server which use bun
+  // the client overrides most as it is bundled by vite
   "compilerOptions": {
     "composite": true, // required for this config to be referenced as a 'TS Project Reference'
 
+    // # environment setup - what javascript/ts features are we using?
     // javascript language version for transpiled output.
     // compiling to older versions will need more compatibility code in the output, but support more browsers
+    // i avoid esnext for stricter compatibility, but this is debateable
     "target": "ES2022",
-    // module system to use for transpiled output code
-    "module": "ES2022",
+    // module system to use for transpiled output code can be overriden
+    "module": "preserve",
     // how typescript resolves the module from an import during code analysis
-    // this includes server-side code, so we shouldn't use "bundler"
-    "moduleResolution": "node16",
-
+    // bun recommends 'bundler', and the client uses this too
+    "moduleResolution": "bundler",
+    // allow us to use newer JS features.
+    "lib": ["ESNext"],
+    // include types from packages without explicitly importing them
+    "types": ["bun-types"],
+    // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
+    // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
+    // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
     "rootDir": "./",
     // import aliases
     "paths": {
@@ -22,20 +32,13 @@
       "@server/*": ["./server/src/*"],
       "@/*": ["./src/*"]
     },
-    // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
-    // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
-    // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
-    "types": [
-      "bun-types"
-    ] /* Specify type package names to be included without being referenced in a source file. */,
-    // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
 
     /* Emit */
-    "noEmit": true,
+    // don't emit transpiled javascript, only 'type declaration' files
+    // this is overridden for the client, but bun can run ts natively
+    "emitDeclarationOnly": true,
     "allowImportingTsExtensions": true,
-    // "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
-    // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
     // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
     // "outFile": "",
     // "outDir": "./",                                   /* Specify an output folder for all emitted files. */
