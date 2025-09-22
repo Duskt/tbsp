@@ -6,6 +6,9 @@
       "dependencies": {
         "postgres": "^3.4.7",
       },
+      "devDependencies": {
+        "bun-types": "^1.2.22",
+      },
     },
     "client": {
       "name": "tbsp-client",
