@@ -5,7 +5,7 @@ ranked competitive games of Mafia.
 
 # Installation & Setup
 
-[See SETUP.md](SETUP#Installation)
+[See SETUP.md](SETUP.md#Installation)
 
 # Ecosystem
 
