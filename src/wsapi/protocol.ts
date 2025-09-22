@@ -1,45 +1,26 @@
-function read(raw: Blob) {
-  return raw.text()
+const protocolVer = 1
+
+interface BaseWSMessage {
+  protocol_version: number
+  kind: string
 }
 
-function write({ msg }: { msg: string }) {
-  return new Blob([msg])
+export interface WSChatMessage extends BaseWSMessage {
+  kind: 'chat'
+  author: string
+  msg: string
+  chatroomId: string
 }
 
-;`
-const protocol = 1;
+type WSMsg = WSChatMessage
+export default WSMsg
 
-interface Data {
-    protocol_version: number;
-    kind: "chat" | "action";
-    msg: string;
+// todo: use elysia's end to end type safety
+export async function read(raw: Blob): Promise<WSMsg> {
+  return JSON.parse(await raw.text())
 }
 
-async function read(raw: Blob): Promise<Data> {
-    let u8arr = await raw.bytes();
-    let ver = u8arr.slice(0, 4);
-    let obj = u8arr.slice(4);
-    return { 
-	protocol_version: ver,
-	kind,
-	msg
-    }
+// todo: minify transmission and allow backwards compatibility (see github issue)
+export function write(msg: WSMsg) {
+  return new Blob([JSON.stringify(msg)])
 }
-
-function write(
-    kind: Data["kind"],
-    msg: Data["msg"],
-    ver: number = protocol,
-): Blob {
-    let blob = new Blob([to32Bit(ver), {kind, msg}]);
-    return blob;
-}
-
-read(write("chat", "hello")).then((v) => {
-    if (v.msg === "hello") {
-	console.log('success')
-    } else {
-	console.log('failure')
-    } 
-});
-`

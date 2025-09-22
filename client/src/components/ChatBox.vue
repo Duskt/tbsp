@@ -3,23 +3,24 @@ import { ref } from 'vue'
 import { User } from '@/user'
 import { Message } from '@/message'
 import InputBox from '@client/components/chat/InputBox.vue'
+import { useWsStore } from '@client/stores/websocket'
 // Unique ID counter
 
 let id = 0
+const ws = useWsStore();
 const dayTime = ref(true)
 const new_message = ref('')
 const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }])
-const { ws } = defineProps<{ ws: WebSocket }>()
 
 // this function receives a message from the server and updates the local chat_box array
-ws.onmessage = (event) => {
-  const { username, messageContent } = JSON.parse(event.data)
-  chat_box.value.push({ id: id++, text: messageContent, username: username })
-}
+ws.listen((event) => {
+  const { author, msg } = event.data
+  chat_box.value.push({ id: id++, text: msg, username: author })
+})
+
 // to call if ws is broken?
-async function requestMessages() {
-  ws.send(JSON.stringify({ id: id }))
-}
+async function requestMessages() {} // todo
+
 </script>
 
 <template>
@@ -30,7 +31,7 @@ async function requestMessages() {
       </li>
     </ul>
 
-    <InputBox :ws="ws" />
+    <InputBox />
   </div>
 </template>
 
