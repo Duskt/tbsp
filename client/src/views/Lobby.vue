@@ -1,26 +1,29 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-
 import QueueButton from '@client/components/QueueButton.vue'
-import useWS from '@client/components/useWS.ts'
-
+import wsCon from '@client/stores/websocket'
 import themes from '@/theme.ts'
-
 const router = useRouter()
-const { ws } = useWS('/', (msg) => {
-  if (!msg.data.startsWith('You')) {
-    console.warn('Unknown WS message:', msg.data)
+
+onMounted(() => {
+console.log(wsCon, wsCon.ws);
+wsCon.listen((e) => {
+  console.log("got msg!!!", e);
+  if (!e.data.msg.startsWith('You')) {
+    console.warn('Unknown WS message:', e.data.msg)
     return
   }
   router.push('/chatroom')
+})
+console.log(wsCon);
 })
 </script>
 
 <template>
   <ol>
     <li v-for="t in themes">
-      <QueueButton :ws="ws" :theme="t" />
+      <QueueButton :theme="t" />
     </li>
   </ol>
 </template>

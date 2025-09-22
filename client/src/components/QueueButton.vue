@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
 import { type Theme } from '@/theme'
 import palette from '@client/style.ts'
-
-const { theme, ws } = defineProps<{ theme: Theme; ws: WebSocket }>()
+import wsCon from '@client/stores/websocket'
+const { theme } = defineProps<{ theme: Theme }>()
 let playersQueued = ref(0)
 
 function joinQueue() {
-  ws.send(theme.id)
+  wsCon.send(theme.id)
 }
 </script>
 

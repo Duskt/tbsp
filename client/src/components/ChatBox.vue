@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { User } from '@/user'
 import { Message } from '@/message'
 import InputBox from '@client/components/chat/InputBox.vue'
+import wsCon from '@/ws'
 // Unique ID counter
 
 let id = 0
@@ -12,10 +13,11 @@ const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }]
 const { ws } = defineProps<{ ws: WebSocket }>()
 
 // this function receives a message from the server and updates the local chat_box array
-ws.onmessage = (event) => {
-  const { username, messageContent } = JSON.parse(event.data)
-  chat_box.value.push({ id: id++, text: messageContent, username: username })
-}
+wsCon.listen((event) => {
+  const { author, msg } = event.data
+  chat_box.value.push({ id: id++, text: msg, username: author })
+})
+
 // to call if ws is broken?
 async function requestMessages() {
   ws.send(JSON.stringify({ id: id }))

@@ -1,31 +1,29 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue'
+import wsCon from '@/ws'
 // Unique ID counter
 let id = 0
 const dayTime = ref(true)
-const new_message = ref('')
+const newMessage = ref('')
 const chat_box = ref([{ id: id++, text: 'OGC' }])
 
-const { ws } = defineProps<{ ws: WebSocket }>()
-
-// function sends the chat message to the server
-function send_message() {
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(new_message.value)
-    new_message.value = ''
-  } else {
-    console.warn('WebSocket not ready', ws.readyState)
-    ws.onopen = () => {
-      ws.send(new_message.value)
-    }
-  }
+function sendMessage() {
+  wsCon.send({
+    protocol_version: 1,
+    kind: "chat",
+    author: "0",
+    msg: newMessage.value,
+    chatroomId: "0"
+  });
+  newMessage.value = '';
 }
+
 </script>
 
 <template>
   <div class="input-box">
-    <form v-if="dayTime" @submit.prevent="send_message" class="chat-input">
-      <input v-model="new_message" required placeholder="Start typing..." />
+    <form v-if="dayTime" @submit.prevent="sendMessage" class="chat-input">
+      <input v-model="newMessage" required placeholder="Start typing..." />
     </form>
   </div>
 </template>

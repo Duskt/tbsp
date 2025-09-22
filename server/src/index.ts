@@ -88,10 +88,7 @@ const app = new Elysia()
   .use(staticPlugin({ assets: `${CLIROOT}/assets`, prefix: '/assets' }))
 
   // lobby connections
-  .ws('/', {
-    // pass to queue manager websocket handler
-    message: queueManager.addToQueue,
-  })
+  .use(queueManager)
   .listen(PORT)
 
 console.log(`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`)

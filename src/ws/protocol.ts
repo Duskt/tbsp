@@ -6,6 +6,7 @@ function write({ msg }: { msg: string }) {
   return new Blob([msg])
 }
 
+<<<<<<< Updated upstream
 ;`
 const protocol = 1;
 
@@ -13,6 +14,14 @@ interface Data {
     protocol_version: number;
     kind: "chat" | "action";
     msg: string;
+=======
+export type WSMsg = WSChatMessage
+
+// todo: use elysia's end to end type safety
+export async function read(raw: Blob): Promise<WSMsg> {
+  console.log(raw)
+  return JSON.parse(await raw.text())
+>>>>>>> Stashed changes
 }
 
 async function read(raw: Blob): Promise<Data> {

@@ -1,19 +1,16 @@
-import Elysia from 'elysia'
-import themes, { Theme } from '@/theme'
-
-// surely there is a better way to get these types
-// elysia is all abt its types so i imagine im being too primitive
-type WSHandler = Parameters<Elysia['ws']>[1]['message'] & {}
-type WSConn = Parameters<WSHandler>[0]
+import Elysia, { t } from 'elysia'
+import themes, { Theme } from '@/theme.ts'
+import { WSMsg } from '@/wsapi/protocol.ts'
+import { ElysiaWS } from 'elysia/ws'
 
 class Queue {
   theme: Theme
-  waiting: WSConn[]
+  waiting: ElysiaWS[]
   constructor(theme: Theme) {
     this.theme = theme
     this.waiting = []
   }
-  load(ws: WSConn, trigger: (queuers: WSConn[]) => void) {
+  load(ws: ElysiaWS, trigger: (queuers: ElysiaWS[]) => void) {
     this.waiting.push(ws)
     if (this.waiting.length >= 2) {
       trigger(this.waiting)
@@ -26,11 +23,11 @@ class QueueManager {
   constructor(themes: Theme[]) {
     this.queues = themes.map((v) => new Queue(v))
   }
-  getQueue(theme_id: Theme['id']) {
-    return this.queues.find((v) => v.theme.id === theme_id)
+  getQueue(themeId: string) {
+    return this.queues.find((v) => themeId === `"${v.theme.id}"`)
   }
-  addToQueue: WSHandler = (ws, msg: string) => {
-    let q = this.getQueue(msg)
+  addToQueue = (ws: ElysiaWS, msg: string) => {
+    let q = this.getQueue(msg.toString())
 
     // invalid theme_id
     if (q === undefined) {
@@ -51,4 +48,14 @@ class QueueManager {
   }
 }
 
-export default new QueueManager(themes)
+const queueManager = new QueueManager(themes)
+const wsQueue = new Elysia().ws('/', {
+  body: t.Any(),
+  transform(msg) {}
+  message(ws, message) {
+    console.log(ws, message)
+    queueManager.addToQueue(ws, message)
+  },
+})
+
+export default wsQueue
