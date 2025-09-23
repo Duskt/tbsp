@@ -26,7 +26,7 @@ pkgs.mkShell {
   PGROOT = "/home/postgres";
   PGDATA = "/home/postgres/tbsp-db";
   PGSOCKETS = "/run/postgresql"; # /run is a tmpfs (held in memory) for program runtime state, so this shouldn't be littering
-  TBSP_DBNAME = "TBSP";
+  TBSP_DBNAME = "tbsp";
   # commands to run upon entering nix shell environment
   # territory of the postgresql daemon...
   shellHook = ''
