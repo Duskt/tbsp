@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 # check=error=true
-FROM postgres:17
+
+FROM postgres:17-alpine
 
 # copy over everything (excl. ``.dockerignore``)
 WORKDIR /app

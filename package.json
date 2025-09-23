@@ -7,7 +7,9 @@
   "author": "Duskt (duskt@github.com)",
   "scripts": {
     "dev": "bun run --cwd=client build; bun run --cwd=server src/index.ts;",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:up": "docker-compose up -d --build", 
+    "docker:down": "docker-compose down"
   },
   "workspaces": [
     "server",

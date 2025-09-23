@@ -1,13 +1,15 @@
-This repository is a W.I.P.
+# TBSP
 
-TBSP ('the big scum project'; preliminary name) is a webserver designed to host
+NOTE: This repository is a W.I.P.
+
+TBSP ("the big scum project"; preliminary name) is a webserver designed to host
 ranked competitive games of Mafia.
 
-# Installation & Setup
+## Installation & Setup
 
-[See SETUP.md](SETUP.md#Installation)
+[See SETUP.md](./SETUP.md)
 
-# Ecosystem
+## Ecosystem
 
 All source code producing JavaScript output is written using TypeScript.
 Software stack:
@@ -15,9 +17,9 @@ Software stack:
 - Vue.js: frontend framework (Single-Page application)
 - Bun: typescript backend runtime (incl. uWebSockets)
 - Elysia backend framework
-- Postgresql
+- PostgreSQL
 
-# Architecture
+## Architecture
 
 This repository contains three `src` directories:
 

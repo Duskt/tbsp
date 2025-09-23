@@ -1,13 +1,20 @@
 import postgres from 'postgres'
 
-const database = import.meta.env.TBSP_DBNAME || 'TBSP'
+const database = import.meta.env.TBSP_DBNAME || 'tbsp'
+
 let sql: postgres.Sql
 try {
-  sql = postgres({ database })
+  sql = postgres({
+    host: import.meta.env.TBSP_DBHOST || 'localhost',
+    port: Number(import.meta.env.TBSP_DBPORT) || 5432,
+    database,
+    username: import.meta.env.TBSP_DBUSER || 'postgres',
+    password: import.meta.env.TBSP_DBPASS || 'postgres',
+  })
 } catch (e) {
   console.error(`Caught error: ${e}`)
   throw new Error(
-    `Couldn't connect to postgres database ${database}. You may need to do \`createdb ${database}\` to set it up.`,
+    `Couldn't connect to postgres database ${database}. You may need to do \`createdb ${database}\` to set it up.`
   )
 }
 export default sql
@@ -32,6 +39,7 @@ export async function createMessageTable() {
   )
 `
 }
+
 // create table for users
 export async function createUserTable() {
   await sql`
@@ -62,7 +70,8 @@ CREATE TABLE IF NOT EXISTS usersInChatroom (
   )
 `
 }
-// this function is to create some fake data so we can use the databases without errors
+
+// create some fake data so we can use the databases without errors
 export async function createFakeData() {
   let chatRoomId = '00000000-0000-0000-0000-000000000001'
   let userId = '00000000-0000-0000-0000-000000000001'
@@ -79,13 +88,13 @@ export async function createFakeData() {
       ${userId},
       ${'Mr. wiggles'},
       ${'password'}
-    )   
+    )
     `
   } catch (error) {
     console.error('Failed to create user:', error)
   }
 
-  //create fake chatroom
+  // create fake chatroom
   try {
     await sql`
     INSERT INTO chatrooms (
@@ -94,13 +103,14 @@ export async function createFakeData() {
     ) VALUES (
       ${chatRoomId},
       ${gameId}
-    )   
+    )
     `
   } catch (error) {
     console.error('Failed to create chatroom:', error)
   }
   console.log('created? fake data.')
 }
+
 // Start of game:
 // assign game ID
 // create chatrooms with game ID
