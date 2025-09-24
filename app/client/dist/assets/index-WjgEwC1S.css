@@ -1,0 +1,135 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+#app {
+  flex-grow: 1;
+}
+
+._app_z18wm_2 {
+  background-color: var(--3507962f);
+}
+
+button[data-v-7dabb3a8] {
+  background-color: var(--733f6047);
+  padding: 8px 24px;
+  border: none;
+}
+span[data-v-7dabb3a8] {
+  color: white;
+  font-size: 24px;
+  font-family: 'Kanit';
+}
+p[data-v-7dabb3a8] {
+  color: var(--733f6085);
+  font-size: 12px;
+  padding-bottom: 8px;
+}
+
+ol[data-v-bbaee2de] {
+  height: 100%;
+  width: 100%;
+  padding-block: 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+li[data-v-bbaee2de] {
+  display: flex;
+  justify-content: center;
+}
+
+.chat-input[data-v-a058fff6] {
+  display: flex;
+  gap: 10px;
+}
+.chat-input input[data-v-a058fff6] {
+  flex: 1;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #535353;
+  color: #ffffff;
+}
+
+.chat-box[data-v-fbbfe49b] {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100vh;
+  width: 70vw;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: #0000005f;
+}
+.chat-messages[data-v-fbbfe49b] {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+}
+.chat-message[data-v-fbbfe49b] {
+  margin-bottom: 5px;
+  border-radius: 8px;
+  max-width: 90%;
+  align-self: flex-start;
+  word-wrap: break-word;
+}
+
+h1[data-v-7f2a0bc7] {
+  font-family: 'kanit';
+  text-align: center;
+  font-size: 100;
+  font-weight: bold;
+  color: #ffffff;
+}
+.role-icon[data-v-7f2a0bc7] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d9d9d9;
+  height: 25vw;
+  width: 25vw;
+}
+.role-icon p[data-v-7f2a0bc7] {
+  font-family: 'kanit';
+  color: #960b22;
+  text-align: center;
+  font-size: 70pt;
+}
+p[data-v-7f2a0bc7] {
+  color: #ffffff;
+  text-align: center;
+  font-size: 40;
+  margin: 10;
+}
+.info-bar[data-v-7f2a0bc7] {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 30vw;
+}
+
+.flex-container[data-v-1d5dcac4] {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: row;
+  background-color: #535353;
+}

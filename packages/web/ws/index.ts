@@ -1,8 +1,12 @@
-import { RouteRegister } from '@/connection';
-import { WSMsg } from '@/ws/protocol';
+import { RouteRegister } from '../';
+import { WSMsg } from './protocol';
 
-export type WebSocketEvent = keyof Bun.WebSocketEventMap; // e.g. 'message' 'open' 'close' 'drain'
+export type WebSocketEvent = PrintEnum<keyof Bun.WebSocketEventMap>; // e.g. 'message' 'open' 'close' 'drain'
 
+// Bun passes 'ws' as the first argument, which is the server's
+// websocket connection object. When first initializing the connection,
+// an object can be provided which becomes `ws.data`, and the type of
+// this is the generic type 'Ctx' (context).
 export type TbspWebSocketHandlerMap<Ctx = {}> = {
   message: (ws: Bun.ServerWebSocket<Ctx>, msg: WSMsg) => void;
   open: (ws: Bun.ServerWebSocket<Ctx>) => void;
@@ -29,7 +33,7 @@ export type WebSocketCallback<A extends Agent, K extends WebSocketEvent> = A ext
 // Agnostic of the agent (generic client/server). Note that this does not actually cause a function
 // to be executed upon any of the events happening, it is simply a register which defines their
 // relationships.
-export class WebSocketRegister<A extends Agent> extends RouteRegister<
+export class WebSocketRegister<A extends Agent, K extends WebSocketEvent> extends RouteRegister<
   WebSocketEvent,
   Array<WebSocketCallback<A, WebSocketEvent>>
 > {
@@ -75,16 +79,5 @@ export class WebSocketRegister<A extends Agent> extends RouteRegister<
     for (let f of handlers) {
       (f as any)(arg1, arg2);
     }
-  }
-}
-
-export class ClientWebSocketController extends WebSocketRegister<'client'> {
-  ws: WebSocket;
-  constructor(path: RoutePath) {
-    super(path);
-    this.ws = new WebSocket(path);
-  }
-  onRegistration<K extends WebSocketEvent>(event: K, callback: ClientWebSocketListener<K>[]): void {
-    this.ws.addEventListener(event, callback);
   }
 }

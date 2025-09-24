@@ -3,7 +3,8 @@
 // of T. So, the same object. But this makes TypeScript
 // list them explicitly in the signature.
 type Verbose<T> = {
-  [K in keyof T]: T[K]
-}
+  [K in keyof T]: T[K];
+};
 
-type RoutePath = string
+// given an enum E, return E so that the IDE (typescript LSP) will print every value
+type PrintEnum<E> = { [K in keyof E]: string }; // how the hell did this work
