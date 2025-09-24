@@ -3,8 +3,8 @@ import { RouterTypes } from 'bun';
 export type RoutePath = string;
 export type RouteHandler = any;
 
-type RegisterObject<Key extends string, Handler> = {
-  [K in Key]?: Handler;
+export type Register<Key extends string> = {
+  [K in Key]?: RouteHandler;
 };
 
 /** Just a map of HTTPMethods/WSEvents to handlers alongside a given route path (e.g. '/')
@@ -13,34 +13,32 @@ type RegisterObject<Key extends string, Handler> = {
  * - for WS it is the events (open, message)
  * This is agent-agnostic (i.e. it isn't built for client or server specifically).
  */
-export abstract class RouteRegister<Key extends string, Handler extends RouteHandler> {
+export abstract class RouteRegister<Key extends string> {
   path: string;
-  handlers: Map<Key, Handler>;
+  handlers: Register<Key>;
   constructor(path: string) {
     this.path = path;
-    this.handlers = new Map();
+    this.handlers = {};
   }
-  toObject(): RegisterObject<Key, Handler> {
-    // ah yes type safety
-    return Object.fromEntries(this.handlers.entries()) as Verbose<RegisterObject<Key, Handler>>;
-  }
-  register(key: Key, handler: Handler) {
-    let regHandler = this.handlers.get(key);
-    if (regHandler === undefined) {
-      regHandler = handler;
-    } else {
-      regHandler = this.combineHandler(regHandler, handler, key);
+  register<K extends Key>(key: K, handler: Register<Key>[K]) {
+    let preset = this.handlers[key];
+    if (preset !== undefined) {
+      handler = this.combineHandler(preset, handler, key);
     }
-    this.handlers.set(key, regHandler);
-    this.onRegistration(key, regHandler);
+    this.handlers[key] = handler;
+    this.onRegistration(key, handler);
     return this;
   }
 
   // these functions can extend subclass functionality
 
-  abstract combineHandler(handlerA: Handler, handlerB: Handler, key: Key): Handler;
+  abstract combineHandler<K extends Key>(
+    handlerA: Register<Key>[K],
+    handlerB: Register<Key>[K],
+    key: K,
+  ): Register<Key>[K];
 
-  onRegistration(_key: Key, _handler: Handler): void {}
+  onRegistration<K extends Key>(_key: K, _handler: Register<Key>[K]): void {}
 }
 
 export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'; // I might be missing an API type library
@@ -49,15 +47,12 @@ export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'; // I might be missin
 // Uses Bun.ExtractRouteParams, a string template-matching type (so basically a macro)
 export type HTTPRouteHandler<P extends RoutePath> = RouterTypes.RouteHandler<P>;
 
-export class HTTPRegister<P extends RoutePath> extends RouteRegister<
-  HTTPMethod,
-  HTTPRouteHandler<P>
-> {
+export class HTTPRegister<P extends RoutePath> extends RouteRegister<HTTPMethod> {
   declare path: P;
   combineHandler(
     _handlerA: HTTPRouteHandler<P>,
     _handlerB: HTTPRouteHandler<P>,
-    key: HTTPMethod,
+    key: HTTPMethod | undefined,
   ): never {
     throw new Error(
       `Duplicate handlers found at HTTP path ${this.path} (${key}) - this is not yet supported.`,
