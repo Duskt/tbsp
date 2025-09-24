@@ -36,11 +36,13 @@
       },
     },
     "app/server": {
-      "name": "tbsp-server",
+      "name": "@tbsp/server",
       "version": "0.0.0",
       "dependencies": {
         "@elysiajs/static": "^1.3.0",
+        "@tbsp/web": "link:@tbsp/web",
         "elysia": "latest",
+        "@tbsp/types": "link:@tbsp/types",
         "postgres": "^3.4.7",
       },
       "devDependencies": {
@@ -263,6 +265,12 @@
     "@sinclair/typebox": ["@sinclair/typebox@0.34.41", "", {}, "sha512-6gS8pZzSXdyRHTIqoqSVknxolr1kzfy4/CeDnrzsVz8TTIWUbOBr6gnzOmTYJ3eXQNh4IYHIGi5aIL7sOZ2G/g=="],
 
     "@sindresorhus/merge-streams": ["@sindresorhus/merge-streams@4.0.0", "", {}, "sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ=="],
+
+    "@tbsp/server": ["@tbsp/server@workspace:app/server"],
+
+    "@tbsp/types": ["@tbsp/types@link:@tbsp/types", {}],
+
+    "@tbsp/web": ["@tbsp/web@link:@tbsp/web", {}],
 
     "@tokenizer/inflate": ["@tokenizer/inflate@0.2.7", "", { "dependencies": { "debug": "^4.4.0", "fflate": "^0.8.2", "token-types": "^6.0.0" } }, "sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg=="],
 
@@ -709,8 +717,6 @@
     "synckit": ["synckit@0.11.11", "", { "dependencies": { "@pkgr/core": "^0.2.9" } }, "sha512-MeQTA1r0litLUf0Rp/iisCaL8761lKAZHaimlbGK4j0HysC4PLfqygQj9srcs0m2RdtDYnF8UuYyKpbjHYp7Jw=="],
 
     "tbsp-client": ["tbsp-client@workspace:app/client"],
-
-    "tbsp-server": ["tbsp-server@workspace:app/server"],
 
     "tinyglobby": ["tinyglobby@0.2.15", "", { "dependencies": { "fdir": "^6.5.0", "picomatch": "^4.0.3" } }, "sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ=="],
 

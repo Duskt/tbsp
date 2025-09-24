@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@elysiajs/static": "^1.3.0",
+    "@tbsp/types": "link:@tbsp/types",
+    "@tbsp/web": "link:@tbsp/web",
     "elysia": "latest",
     "postgres": "^3.4.7"
   },
