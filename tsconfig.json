@@ -18,7 +18,7 @@
     // how typescript resolves the module from an import during code analysis
     // bun recommends 'bundler', and the client uses this too
     "moduleResolution": "bundler",
-    // allow us to use newer JS features.
+    // allow us to use newer JS features. specifying this requires import of bun libraries
     "lib": ["ESNext"],
     // include types from packages without explicitly importing them
     "types": ["bun-types"],
