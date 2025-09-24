@@ -3,24 +3,25 @@ import { ref } from 'vue'
 import { User } from '@tbsp/types/user.ts'
 import { Message } from '@tbsp/types/message.ts'
 import InputBox from './chat/InputBox.vue'
-import { type ClientWebSocketListener } from '@tbsp/web/ws'
+import ws from '../ws/new.ts'
+import type { ClientWebSocketListener } from '@tbsp/web/ws'
 // Unique ID counter
 
 let id = 0
 const dayTime = ref(true)
 const new_message = ref('')
 const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }])
-const { ws } = defineProps<{ ws: WebSocket }>()
 
+ws.onmessage((event) => {});
 // this function receives a message from the server and updates the local chat_box array
-wsCon.listen((event) => {
+ws.onmessage((event) => {
   const { author, msg } = event.data
   chat_box.value.push({ id: id++, text: msg, username: author })
 })
 
 // to call if ws is broken?
 async function requestMessages() {
-  ws.send(JSON.stringify({ id: id }))
+  ws.ws.send(JSON.stringify({ id: id }))
 }
 </script>
 

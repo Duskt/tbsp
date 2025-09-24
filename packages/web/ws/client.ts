@@ -1,4 +1,5 @@
-import { WebSocketRegister, WebSocketEvent, ClientWebSocketListener } from '.';
+import { RoutePath } from '../index.ts';
+import { WebSocketRegister, WebSocketEvent, ClientWebSocketListener } from './index.ts';
 
 export class ClientWebSocketController extends WebSocketRegister<'client'> {
   ws: WebSocket;

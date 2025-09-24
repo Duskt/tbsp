@@ -33,7 +33,7 @@ export type WebSocketCallback<A extends Agent, K extends WebSocketEvent> = A ext
 // Agnostic of the agent (generic client/server). Note that this does not actually cause a function
 // to be executed upon any of the events happening, it is simply a register which defines their
 // relationships.
-export class WebSocketRegister<A extends Agent, K extends WebSocketEvent> extends RouteRegister<
+export class WebSocketRegister<A extends Agent> extends RouteRegister<
   WebSocketEvent,
   Array<WebSocketCallback<A, WebSocketEvent>>
 > {

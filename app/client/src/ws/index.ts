@@ -1,5 +1,5 @@
 import { WebSocketEventMap, WebSocketHandler } from 'bun';
-import { type WSMsg, read, write } from '@/';
+import { type WSMsg, read, write } from '@tbsp/web/ws/protocol.ts';
 
 export default class WSController {
   path: RoutePath;
