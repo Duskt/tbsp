@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { User } from '@/user'
-import { Message } from '@/message'
-import InputBox from '@client/components/chat/InputBox.vue'
-import wsCon from '@/ws'
+import { User } from '@tbsp/types/user.ts'
+import { Message } from '@tbsp/types/message.ts'
+import InputBox from './chat/InputBox.vue'
+import { type ClientWebSocketListener } from '@tbsp/web/ws'
 // Unique ID counter
 
 let id = 0

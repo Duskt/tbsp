@@ -8279,7 +8279,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
   __name: "App",
   setup(__props) {
     useCssVars((_ctx) => ({
-      "3507962f": unref(palette).black[0]
+      "2d6f8aec": unref(palette).black[0]
     }));
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(RouterView), {
@@ -8312,74 +8312,6 @@ class Theme {
 const vanilla = new Theme({ id: "vanilla", name: "Vanilla" });
 const classic = new Theme({ id: "classic", name: "Classic" });
 const defaultThemes = [vanilla, classic];
-async function read(raw) {
-  console.log(raw);
-  return JSON.parse(await raw.text());
-}
-function write(msg) {
-  return new Blob([JSON.stringify(msg)]);
-}
-class ClientWSController {
-  path;
-  ws;
-  listeners;
-  constructor(path) {
-    this.path = path;
-    this.ws = new WebSocket(path);
-    this.listeners = /* @__PURE__ */ new Map();
-  }
-  /* Append a callback function to be executed upon a WebSocket event occurrence.
-   * Returns a 'listenerId' which can be passed to `cancelListener`.
-   * This ID is autoincremented. This callback function will be executed after any
-   * previously registered listeners.
-   */
-  addEventListener(event, callback) {
-    let listenerId = Math.max(Math.max(...this.listeners.keys()), 0) + 1;
-    let listener = [event, callback];
-    console.log(listener, listenerId);
-    if (event === "message") {
-      listener[1] = async (e) => {
-        let decodedMessage = new MessageEvent(e.type, {
-          data: await read(e.data),
-          origin: e.origin,
-          ports: e.ports.map((v) => v)
-        });
-        return callback(decodedMessage);
-      };
-    }
-    this.listeners.set(listenerId, listener);
-    this.ws.addEventListener(...listener);
-    return listenerId;
-  }
-  /* Append a callback function to be executed upon receiving a message.
-   * Returns a 'listenerId' which can be passed to `cancelListener`.
-   * This ID is autoincremented. This callback function will be executed after any
-   * previously registered listeners.
-   */
-  listen(callback) {
-    return this.addEventListener("message", callback);
-  }
-  cancelListener(listenerId) {
-    let listener = this.listeners.get(listenerId);
-    if (listener === void 0) return;
-    this.ws.removeEventListener(...listener);
-    this.listeners.delete(listenerId);
-  }
-  send(msg) {
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(write(msg));
-    } else {
-      this.addEventListener("open", () => {
-        this.ws.send(write(msg));
-      });
-    }
-  }
-  redirect(path) {
-    this.ws.close();
-    this.ws = new WebSocket(path);
-  }
-}
-const wsCon = new ClientWSController("/");
 const _sfc_main$5 = /* @__PURE__ */ defineComponent({
   __name: "QueueButton",
   props: {
@@ -8387,8 +8319,8 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
   },
   setup(__props) {
     useCssVars((_ctx) => ({
-      "733f6047": unref(palette).black[1],
-      "733f6085": unref(palette).black[3]
+      "db028bbc": unref(palette).black[1],
+      "db028b40": unref(palette).black[3]
     }));
     let playersQueued = ref(0);
     function joinQueue() {
@@ -8404,7 +8336,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const QueueButton = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__scopeId", "data-v-7dabb3a8"]]);
+const QueueButton = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__scopeId", "data-v-7b7f68a6"]]);
 const _sfc_main$4 = /* @__PURE__ */ defineComponent({
   __name: "Lobby",
   setup(__props) {
@@ -8432,7 +8364,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const LobbyView = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-bbaee2de"]]);
+const LobbyView = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-4e77a9ae"]]);
 const _hoisted_1$3 = { class: "input-box" };
 const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   __name: "InputBox",
@@ -8470,11 +8402,14 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const InputBox = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-a058fff6"]]);
+const InputBox = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-ad519dcc"]]);
 const _hoisted_1$2 = { class: "chat-box" };
 const _hoisted_2$1 = { class: "chat-messages" };
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "ChatBox",
+  props: {
+    ws: {}
+  },
   setup(__props) {
     let id = 0;
     ref(true);
@@ -8494,12 +8429,12 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
             }, toDisplayString(message.username) + ": " + toDisplayString(message.text), 1);
           }), 128))
         ]),
-        createVNode(InputBox)
+        createVNode(InputBox, { ws: _ctx.ws }, null, 8, ["ws"])
       ]);
     };
   }
 });
-const ChatBox = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-fbbfe49b"]]);
+const ChatBox = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-080122ad"]]);
 const _hoisted_1$1 = { class: "info-bar" };
 const _hoisted_2 = { class: "role-icon" };
 const _sfc_main$1 = {
@@ -8557,7 +8492,7 @@ const _sfc_main = {
     };
   }
 };
-const ChatView = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-1d5dcac4"]]);
+const ChatView = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-70fe7caa"]]);
 const router = createRouter({
   history: createWebHistory("/"),
   routes: [

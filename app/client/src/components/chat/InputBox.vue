@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue'
-import wsCon from '@/ws'
 // Unique ID counter
 let id = 0
 const dayTime = ref(true)

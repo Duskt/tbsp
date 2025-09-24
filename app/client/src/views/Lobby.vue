@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import QueueButton from '@client/components/QueueButton.vue'
-import wsCon from '@client/stores/websocket'
-import themes from '@/theme.ts'
+import QueueButton from '../components/QueueButton.vue'
+import themes from '@tbsp/types/theme.ts'
 const router = useRouter()
 
 onMounted(() => {

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { type Theme } from '@/theme'
-import palette from '@client/style.ts'
-import wsCon from '@client/stores/websocket'
+import { type Theme } from '@tbsp/types/theme.ts'
+import palette from '../style.ts'
 const { theme } = defineProps<{ theme: Theme }>()
 let playersQueued = ref(0)
 

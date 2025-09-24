@@ -1,5 +1,5 @@
 {
-  "name": "tbsp-server",
+  "name": "@tbsp/server",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -9,11 +9,12 @@
   },
   "dependencies": {
     "@elysiajs/static": "^1.3.0",
-    "elysia": "latest"
+    "elysia": "latest",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
     "bun-types": "latest",
     "typescript": "^5.9.2"
   },
-  "module": "src/index.js"
+  "module": "src/index.ts"
 }

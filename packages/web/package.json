@@ -1,5 +1,5 @@
 {
-  "name": "thebigscumproject-web",
+  "name": "@tbsp/web",
   "version": "0.0.0",
   "description": "A web server and client built with sockets which supplies the framework for the TBSP HTTP server and WS connections.",
   "type": "module",
@@ -9,7 +9,8 @@
   },
   "exports": {
     ".": "./index.ts",
-    "./ws": "./ws/index.ts"
+    "./ws": "./ws/index.ts",
+    "./ws/*": "./ws/*"
   },
   "devDependencies": {
     "bun-types": "^1.2.22"

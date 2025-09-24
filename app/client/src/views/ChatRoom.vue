@@ -1,6 +1,6 @@
 <script setup>
-import ChatBox from '@client/components/ChatBox.vue'
-import GameInfo from '@client/components/GameInfo.vue'
+import ChatBox from '../components/ChatBox.vue'
+import GameInfo from '../components/GameInfo.vue'
 </script>
 
 <template>

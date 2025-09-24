@@ -1,0 +1,31 @@
+{
+  "name": "tbsp",
+  "version": "0.0.0",
+  "description": "A web server and client built with sockets to implement real-time chatrooms and host games of Mafia, a popular social deception-based game.",
+  "type": "module",
+  "license": "ISC",
+  "contributors": [
+    "Duskt (duskt@github.com)",
+    "Liam Lethbridge (liam-m-lethbridge@github.com)",
+    "Tom Heaton (tomheaton@github.com)"
+  ],
+  "scripts": {
+    "dev": "bun run --cwd=./app/client build; bun run --cwd=./app/server src/index.ts;",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "workspaces": [
+    "app/server",
+    "app/client"
+  ],
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "typescript": "^5.9.2"
+  },
+  "exports": {
+    "./server": "./app/server/",
+    "./server/*": "./app/server/src/*",
+    "./client": "./app/client/",
+    "./client/*": "./app/client/*",
+    "./*": "./packages/*/index.ts"
+  }
+}
