@@ -39,6 +39,21 @@ export abstract class RouteRegister<Key extends string> {
   ): Register<Key>[K];
 
   onRegistration<K extends Key>(_key: K, _handler: Register<Key>[K]): void {}
+
+  handlersObject() {
+    return Object.fromEntries(Object.entries(this.handlers)) as Register<Key> & object;
+  }
+  display() {
+    let cls = 'RouteRegisterSubclass';
+    let keys = Object.keys(this.handlers);
+    // poor man's introspection
+    if (keys.every((v) => ['GET', 'POST', 'PUT', 'DELETE'].includes(v))) {
+      cls = 'HttpRegister';
+    } else if (keys.every((v) => ['message', 'open', 'error', 'close'].includes(v))) {
+      cls = 'WebSocketRegister';
+    }
+    return `${cls} (at '${this.path}' ${Object.keys(this.handlers).join(', ')})`;
+  }
 }
 
 export type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'; // I might be missing an API type library

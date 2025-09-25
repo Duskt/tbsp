@@ -1,7 +1,7 @@
 import { RouterTypes } from 'bun';
-import { WSMsg, read, write } from '@/ws/protocol';
-import { HTTPRegister } from '@/connection';
-import { TbspWebSocketHandler, WebSocketRegister } from '@/ws';
+import { WSMsg, read, write } from '@tbsp/web/ws/protocol.ts';
+import { HTTPRegister, RouteRegister } from '@tbsp/web';
+import WebSocketRegister, { TbspWebSocketHandler } from '@tbsp/web/ws';
 import fs from 'node:fs';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -71,11 +71,27 @@ function PublicDirectory(basePath: string, preload = false, prefix = '') {
     if (fs.statSync(itemPath).isDirectory()) {
       app.use(PublicDirectory(`${basePath}/${item}`, preload, `${item}/`));
     } else {
-      console.log(`Registered file ${itemPath} at /${prefix}${item}`);
+      // console.log(`Registered file ${itemPath} at /${prefix}${item}`);
       app.get(`/${prefix}${item}`, File(itemPath, preload));
     }
   }
   return app;
+}
+
+function displayObject(obj: object, tabWidth = 4): string {
+  return (
+    '{\n' +
+    Object.entries(obj)
+      .map(
+        ([k, v]) =>
+          ' '.repeat(tabWidth) +
+          k +
+          ': ' +
+          (typeof v === 'object' ? displayObject(v) : (v as string)),
+      )
+      .join('\n') +
+    '\n}'
+  );
 }
 
 /**
@@ -84,7 +100,7 @@ function PublicDirectory(basePath: string, preload = false, prefix = '') {
  * This is still missing features that might need to be implemented.
  */
 class TBSPApp {
-  httpRegisters: Map<RoutePath, HTTPRegister>;
+  httpRegisters: Map<RoutePath, HTTPRegister<string>>;
   wsRegisters: Map<RoutePath, WebSocketRegister<'server'>>;
   logDebug: boolean;
   constructor() {
@@ -96,6 +112,18 @@ class TBSPApp {
   debug(msg: string) {
     if (!this.logDebug) return;
     console.log(msg);
+  }
+
+  displayRegisterMap(register: Map<string, { display: () => string }>, linePrefix = '') {
+    return register
+      .entries()
+      .map(([_, reg]) => linePrefix + reg.display())
+      .toArray()
+      .join('\n');
+  }
+
+  displayRegisters() {
+    return `HttpRegisters:\n${this.displayRegisterMap(this.httpRegisters, '- ')}\n\nWebSocketRegisters:\n${this.displayRegisterMap(this.wsRegisters, '- ')}`;
   }
 
   route(method: HTTPMethod, path: string, handler: RouteHandler) {
@@ -159,13 +187,8 @@ class TBSPApp {
     return this;
   }
 
-  getHttpRoutes(): HttpRouteObject {
-    return Object.fromEntries(
-      this.httpRegisters.entries().map(([route, methodMap]) => [route, methodMap.toObject()]),
-    );
-  }
-
   getRoutes(): HttpRouteObject {
+    this.debug(this.displayRegisters());
     let allPaths = new Set(
       Array.from(this.httpRegisters.keys()).concat(...this.wsRegisters.keys()),
     );
@@ -176,6 +199,9 @@ class TBSPApp {
       .map((path) => {
         let httpReg = this.httpRegisters.get(path);
         let wsReg = this.wsRegisters.get(path);
+        this.debug(
+          `Merging at ${path}: ${httpReg ? httpReg.display() : undefined} (HTTP) with ${wsReg ? wsReg.display() : undefined} (WS)`,
+        );
         if (httpReg === undefined) {
           if (wsReg !== undefined) {
             httpReg = new HTTPRegister(path);
@@ -186,17 +212,17 @@ class TBSPApp {
             );
           }
         } else if (wsReg !== undefined) {
-          let httpGetHandler = httpReg.handlers.get('GET');
+          let httpGetHandler = httpReg.handlers['GET'];
           if (httpGetHandler === undefined) {
             this.debug('Inserted into empty GET handler.');
             // Add HTTP GET handler which upgrades to websocket let http
             httpReg.addRoute('GET', upgrade);
           } else {
             // check for header 'upgrade: websocket' to either upgrade or defer to http handler
-            httpReg.handlers.set('GET', respondOrUpgrade(httpGetHandler));
+            httpReg.handlers['GET'] = respondOrUpgrade(httpGetHandler);
           }
         } // otherwise httpReg only - leave it alone
-        return [path, httpReg.toObject()];
+        return [path, httpReg.handlersObject()];
       });
 
     return Object.fromEntries(routeEntries);
@@ -221,7 +247,7 @@ class TBSPApp {
         wsRegisters.forEach((wsReg, wsPath) => {
           debug(`Checking register ${wsReg} (at ${wsPath}) for match at ${path}`);
           if (wsPath !== path) return; // TODO: match globs, pass params, etc
-          let msgCallbacks = wsReg.handlers.get('message');
+          let msgCallbacks = wsReg.handlers['message'];
           debug(`Matched. Got onmessage callbacks: ${msgCallbacks}`);
           if (msgCallbacks === undefined) return;
           for (let f of msgCallbacks as TbspWebSocketHandler<'message'>[]) {
@@ -241,9 +267,9 @@ class TBSPApp {
 
   start(port: number) {
     let routes = this.getRoutes();
-    this.debug(`Compiled routes: ${routes}`);
+    this.debug(`Compiled routes: ${displayObject(routes)}`);
     let websocket = this.getCompiledWebSocket();
-    this.debug(`Compiled Bun.WebSocketHandler: ${websocket}`);
+    this.debug(`Compiled Bun.WebSocketHandler: ${displayObject(websocket)}`);
     Bun.serve({
       development: true,
       port,
@@ -263,8 +289,8 @@ class TBSPApp {
 }
 
 let x = new TBSPApp()
-  .use(PublicDirectory('client/dist/'))
-  .get('/', File('client/dist/index.html'))
+  .use(PublicDirectory('app/client/dist/'))
+  .get('/', File('app/client/dist/index.html'))
   .websocket('/', (ws) =>
     ws
       .onopen((ws) => console.log('Got WS conn.'))

@@ -6,6 +6,12 @@ const WebSocketEventKeys: WebSocketEvent[] = ['open', 'close', 'message', 'error
 export function isWebSocketEvent(k: string): k is WebSocketEvent {
   return WebSocketEventKeys.some((v) => v === k);
 }
+export type WebSocketEventMap<Msg> = {
+  open: Event;
+  close: CloseEvent;
+  message: MessageEvent<Msg>;
+  error: Event;
+};
 
 // Bun passes 'ws' as the first argument, which is the server's
 // websocket connection object. When first initializing the connection,
@@ -19,7 +25,7 @@ export type TbspWebSocketHandlerMap<Ctx = {}> = {
 };
 
 export type ClientWebSocketListener<K extends WebSocketEvent> = (
-  event: Bun.WebSocketEventMap[K],
+  e: WebSocketEventMap<WSMsg>[K],
 ) => void;
 export type TbspWebSocketHandler<K extends WebSocketEvent> = TbspWebSocketHandlerMap[K];
 
@@ -46,7 +52,7 @@ export default class WebSocketRegister<A extends Agent> extends RouteRegister<We
     return handlerA.concat(...handlerB);
   }
   addEventHandler<K extends WebSocketEvent>(event: K, callback: WebSocketCallback<A, K>) {
-    return this.register<K>(event, [callback]);
+    return this.register(event, [callback]);
   }
 
   onmessage(callback: WebSocketCallback<A, 'message'>) {
