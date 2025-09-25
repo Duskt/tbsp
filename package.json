@@ -15,17 +15,11 @@
   },
   "workspaces": [
     "app/server",
-    "app/client"
+    "app/client",
+    "packages/*"
   ],
   "devDependencies": {
     "prettier": "3.6.2",
     "typescript": "^5.9.2"
-  },
-  "exports": {
-    "./server": "./app/server/",
-    "./server/*": "./app/server/src/*",
-    "./client": "./app/client/",
-    "./client/*": "./app/client/*",
-    "./*": "./packages/*/index.ts"
   }
 }

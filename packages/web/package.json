@@ -7,8 +7,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+    "*"
+  ],
   "exports": {
     ".": "./index.ts",
+    "./*": "./*",
     "./ws": "./ws/index.ts",
     "./ws/*": "./ws/*"
   },

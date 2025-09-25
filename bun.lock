@@ -9,7 +9,7 @@
       },
     },
     "app/client": {
-      "name": "tbsp-client",
+      "name": "@tbsp/client",
       "version": "0.0.0",
       "dependencies": {
         "pinia": "^3.0.3",
@@ -40,14 +40,28 @@
       "version": "0.0.0",
       "dependencies": {
         "@elysiajs/static": "^1.3.0",
-        "@tbsp/web": "link:@tbsp/web",
+        "@tbsp/types": "workspace:0.0.0",
+        "@tbsp/web": "workspace:0.0.0",
         "elysia": "latest",
-        "@tbsp/types": "link:@tbsp/types",
         "postgres": "^3.4.7",
       },
       "devDependencies": {
         "bun-types": "latest",
         "typescript": "^5.9.2",
+      },
+    },
+    "packages/types": {
+      "name": "@tbsp/types",
+      "version": "0.0.0",
+    },
+    "packages/utils": {
+      "name": "@tbsp/utils",
+    },
+    "packages/web": {
+      "name": "@tbsp/web",
+      "version": "0.0.0",
+      "devDependencies": {
+        "bun-types": "^1.2.22",
       },
     },
   },
@@ -266,11 +280,15 @@
 
     "@sindresorhus/merge-streams": ["@sindresorhus/merge-streams@4.0.0", "", {}, "sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ=="],
 
+    "@tbsp/client": ["@tbsp/client@workspace:app/client"],
+
     "@tbsp/server": ["@tbsp/server@workspace:app/server"],
 
-    "@tbsp/types": ["@tbsp/types@link:@tbsp/types", {}],
+    "@tbsp/types": ["@tbsp/types@workspace:packages/types"],
 
-    "@tbsp/web": ["@tbsp/web@link:@tbsp/web", {}],
+    "@tbsp/utils": ["@tbsp/utils@workspace:packages/utils"],
+
+    "@tbsp/web": ["@tbsp/web@workspace:packages/web"],
 
     "@tokenizer/inflate": ["@tokenizer/inflate@0.2.7", "", { "dependencies": { "debug": "^4.4.0", "fflate": "^0.8.2", "token-types": "^6.0.0" } }, "sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg=="],
 
@@ -715,8 +733,6 @@
     "supports-color": ["supports-color@7.2.0", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="],
 
     "synckit": ["synckit@0.11.11", "", { "dependencies": { "@pkgr/core": "^0.2.9" } }, "sha512-MeQTA1r0litLUf0Rp/iisCaL8761lKAZHaimlbGK4j0HysC4PLfqygQj9srcs0m2RdtDYnF8UuYyKpbjHYp7Jw=="],
-
-    "tbsp-client": ["tbsp-client@workspace:app/client"],
 
     "tinyglobby": ["tinyglobby@0.2.15", "", { "dependencies": { "fdir": "^6.5.0", "picomatch": "^4.0.3" } }, "sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ=="],
 
