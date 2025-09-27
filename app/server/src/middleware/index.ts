@@ -15,6 +15,19 @@ type HttpRouteObject = {
   [path: string]: RegisterObject<HTTPMethod, RouteHandler>;
 };
 
+function checkDev(...vars: string[]) {
+  for (const v of vars) {
+    let value = import.meta.env[v];
+    if (value !== undefined && value !== '') {
+      console.log(`Found environment variable ${v} (='${value}'); enabling development mode.`);
+      return true;
+    }
+  }
+  return false;
+}
+
+const DEV_MODE = checkDev('DEV', 'DEV_MODE', 'DEVELOPMENT', 'DEVELOPMENT_MODE');
+
 const upgrade: RouteHandler = (req, server) => {
   // I think the response we return is overridden
   server.upgrade(req, { data: { origin: new URL(req.url) } });
@@ -45,6 +58,10 @@ function displayObject(obj: object, tabWidth = 4): string {
   );
 }
 
+interface TBSPAppInitOptions {
+  logDebug?: boolean;
+}
+
 /**
  * Wrapper around `Bun.serve` API for HTTP server.
  * Uses method chaining to build a configuration object and promotes abstraction of RouteHandlers.
@@ -54,10 +71,11 @@ export default class TBSPApp {
   httpRegisters: Map<RoutePath, HTTPRegister<string>>;
   wsRegisters: Map<RoutePath, WebSocketRegister<'server'>>;
   logDebug: boolean;
-  constructor() {
+  constructor(init?: TBSPAppInitOptions) {
+    let { logDebug = false } = init ?? {};
     this.httpRegisters = new Map();
     this.wsRegisters = new Map();
-    this.logDebug = true;
+    this.logDebug = logDebug;
   }
 
   debug(msg: string) {
