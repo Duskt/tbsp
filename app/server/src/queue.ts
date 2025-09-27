@@ -1,17 +1,18 @@
-import Elysia, { t } from 'elysia';
 import { ClientWebSocketController } from '@tbsp/web/ws/client.ts';
 import themes, { Theme } from '@tbsp/mafia/theme';
 import { type WSMsg } from '@tbsp/web/ws/protocol.ts';
-import { ElysiaWS } from 'elysia/ws';
+import type { ServerWebSocket } from 'bun';
+
+type WS = ServerWebSocket<{}>;
 
 class Queue {
   theme: Theme;
-  waiting: ElysiaWS[];
+  waiting: WS[];
   constructor(theme: Theme) {
     this.theme = theme;
     this.waiting = [];
   }
-  load(ws: ElysiaWS, trigger: (queuers: ElysiaWS[]) => void) {
+  load(ws: WS, trigger: (queuers: WS[]) => void) {
     this.waiting.push(ws);
     if (this.waiting.length >= 2) {
       trigger(this.waiting);
@@ -25,18 +26,21 @@ class QueueManager {
     this.queues = themes.map((v) => new Queue(v));
   }
   getQueue(themeId: string) {
-    return this.queues.find((v) => themeId === `"${v.theme.id}"`);
+    return this.queues.find((v) => themeId === v.theme.id);
   }
-  addToQueue = (ws: ElysiaWS, msg: string) => {
-    let q = this.getQueue(msg.toString());
+  addToQueue = (ws: WS, msg: WSMsg) => {
+    if (msg.kind !== 'queue') {
+      return;
+    }
+    let q = this.getQueue(msg.theme);
 
     // invalid theme_id
     if (q === undefined) {
       ws.send('ERR');
       return;
     }
-    // prevent duplicates
-    if (q.waiting.map((v) => v.id).includes(ws.id)) {
+    // prevent duplicates TODO: not by IP
+    if (q.waiting.map((v) => v.remoteAddress).includes(ws.remoteAddress)) {
       ws.send("WARN: you're already queueing");
       return;
     }
@@ -50,3 +54,4 @@ class QueueManager {
 }
 
 const queueManager = new QueueManager(themes);
+export default queueManager;

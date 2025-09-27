@@ -46,7 +46,7 @@ function debugPath<T>(path: string, fallback: T) {
  * - in development: read the file and send the content
  * - in production: load the file into memory immediately and send content on request without fs IO
  */
-function File(path: string, preload = false) {
+export function File(path: string, preload = false) {
   let r = debugPath(path, () => new Response('Resource not found.', { status: 404 }));
   if (r) return r;
 
@@ -57,7 +57,7 @@ function File(path: string, preload = false) {
   }
 }
 
-function PublicDirectory(basePath: string, preload = false, prefix = '') {
+export function PublicDirectory(basePath: string, preload = false, prefix = '') {
   basePath = basePath.endsWith('/') ? basePath.slice(0, basePath.length - 1) : basePath;
   let app = new TBSPApp();
 
@@ -99,14 +99,14 @@ function displayObject(obj: object, tabWidth = 4): string {
  * Uses method chaining to build a configuration object and promotes abstraction of RouteHandlers.
  * This is still missing features that might need to be implemented.
  */
-class TBSPApp {
+export default class TBSPApp {
   httpRegisters: Map<RoutePath, HTTPRegister<string>>;
   wsRegisters: Map<RoutePath, WebSocketRegister<'server'>>;
   logDebug: boolean;
   constructor() {
     this.httpRegisters = new Map();
     this.wsRegisters = new Map();
-    this.logDebug = false;
+    this.logDebug = true;
   }
 
   debug(msg: string) {
@@ -287,13 +287,3 @@ class TBSPApp {
     console.log(`Listening at http://localhost:${port}`);
   }
 }
-
-let x = new TBSPApp()
-  .use(PublicDirectory('app/client/dist/'))
-  .get('/', File('app/client/dist/index.html'))
-  .websocket('/', (ws) =>
-    ws
-      .onopen((ws) => console.log('Got WS conn.'))
-      .onmessage((ws, msg) => console.log('omg it worked', msg)),
-  )
-  .start(9001);
