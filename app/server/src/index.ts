@@ -1,4 +1,5 @@
-import TBSPApp, { File, PublicDirectory } from './app.ts';
+import TBSPApp from './middleware';
+import { File, PublicDirectory } from './middleware/static.ts';
 import sql, {
   createChatroomsTable,
   createMessageTable,
@@ -7,6 +8,7 @@ import sql, {
   createFakeData,
 } from './db.ts';
 import queueManager from './queue.ts';
+import type { ServerWebSocket } from 'bun';
 
 createUserTable();
 createChatroomsTable();
@@ -14,7 +16,7 @@ createMessageTable();
 createUsersInChatroomTable();
 const PORT = 9001;
 const CLIROOT = '../client/dist';
-const clients = new Set<WebSocket>();
+const clients = new Set<ServerWebSocket<{}>>();
 
 let x = new TBSPApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
