@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue'
+import ws from '../../ws'
 // Unique ID counter
 let id = 0
 const dayTime = ref(true)
@@ -7,7 +8,7 @@ const newMessage = ref('')
 const chat_box = ref([{ id: id++, text: 'OGC' }])
 
 function sendMessage() {
-  wsCon.send({
+  ws.send({
     protocol_version: 1,
     kind: "chat",
     author: "0",

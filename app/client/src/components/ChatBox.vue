@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { User } from '@tbsp/types/user.ts'
-import { Message } from '@tbsp/types/message.ts'
+import { User } from '@tbsp/mafia/user.ts'
+import { Message } from '@tbsp/mafia/message.ts'
 import InputBox from './chat/InputBox.vue'
-import ws from '../ws/new.ts'
+import ws from '../ws'
 import type { ClientWebSocketListener } from '@tbsp/web/ws'
 // Unique ID counter
 
@@ -15,13 +15,14 @@ const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }]
 ws.onmessage((event) => {});
 // this function receives a message from the server and updates the local chat_box array
 ws.onmessage((event) => {
+  if (event.data.kind !== 'chat') return;
   const { author, msg } = event.data
   chat_box.value.push({ id: id++, text: msg, username: author })
 })
 
 // to call if ws is broken?
 async function requestMessages() {
-  ws.ws.send(JSON.stringify({ id: id }))
+  ws.send({ id: id })
 }
 </script>
 

@@ -11,14 +11,16 @@
   ],
   "scripts": {
     "dev": "bun run --cwd=./app/client build; bun run --cwd=./app/server src/index.ts;",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:imports": "grep -Er --include=*.ts --include=*.vue --exclude-dir=node_modules --exclude-dir=dist '\\w+\\.js'"
   },
   "workspaces": [
     "app/server",
     "app/client",
-    "packages/*"
+    "lib/*"
   ],
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
     "prettier": "3.6.2",
     "typescript": "^5.9.2"
   }

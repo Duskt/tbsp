@@ -1,6 +1,7 @@
 import Elysia, { t } from 'elysia';
-import themes, { Theme } from '@tbsp/types/theme.ts';
-import { WSMsg } from '@tbsp/web/ws/protocol.ts';
+import { ClientWebSocketController } from '@tbsp/web/ws/client.ts';
+import themes, { Theme } from '@tbsp/mafia/theme';
+import { type WSMsg } from '@tbsp/web/ws/protocol.ts';
 import { ElysiaWS } from 'elysia/ws';
 
 class Queue {
@@ -49,13 +50,3 @@ class QueueManager {
 }
 
 const queueManager = new QueueManager(themes);
-const wsQueue = new Elysia().ws('/', {
-  body: t.Any(),
-  transform(msg) {},
-  message(ws, message) {
-    console.log(ws, message);
-    queueManager.addToQueue(ws, message);
-  },
-});
-
-export default wsQueue;

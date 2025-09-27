@@ -1,5 +1,6 @@
-import { RouteRegister } from '../';
-import { WSMsg } from './protocol';
+import { RouteRegister } from '../index.ts';
+import type { Verbose, PrintEnum, Agent } from '../index.ts';
+import { type WSMsg } from './protocol.ts';
 
 export type WebSocketEvent = PrintEnum<keyof Bun.WebSocketEventMap>; // e.g. 'message' 'open' 'close' 'drain'
 const WebSocketEventKeys: WebSocketEvent[] = ['open', 'close', 'message', 'error'];

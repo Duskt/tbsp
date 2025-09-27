@@ -1,6 +1,6 @@
-import { RoutePath } from '../index.ts';
-import WebSocketRegister, { WebSocketEvent, ClientWebSocketListener } from './index.ts';
-import { WSMsg, write } from './protocol.ts';
+import { type RoutePath } from '../index.ts';
+import WebSocketRegister, { type WebSocketEvent, type ClientWebSocketListener } from './index.ts';
+import { type WSMsg, write } from './protocol.ts';
 
 export class ClientWebSocketController extends WebSocketRegister<'client'> {
   ws: WebSocket;
@@ -8,7 +8,7 @@ export class ClientWebSocketController extends WebSocketRegister<'client'> {
     super(path);
     this.ws = new WebSocket(path);
   }
-  onRegistration<K extends WebSocketEvent>(
+  override onRegistration<K extends WebSocketEvent>(
     event: K,
     callbacks: ClientWebSocketListener<K>[],
   ): void {
@@ -18,9 +18,6 @@ export class ClientWebSocketController extends WebSocketRegister<'client'> {
   }
   async send(data: WSMsg) {
     this.ws.send(await write(data).arrayBuffer());
-  }
-  terminate() {
-    this.ws.terminate();
   }
   close() {
     this.ws.close();

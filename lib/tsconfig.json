@@ -1,0 +1,21 @@
+/* Base configuration for library packages.
+ *
+ * The host (the system running transpiled output files) could theoretically be anything,
+ * therefore these options must allow wide compatibility and follow NPM package standards.
+ * This includes transpiling TypeScript to JavaScript and providing ``.d.ts`` type declarations.
+ *
+ * Required for libraries:
+ * - module node16/node18/nodenext
+ * - moduleResolution node16/nodenext
+ */
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+      "target": "es2020",
+      "module": "nodenext",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "declaration": true,
+      "rewriteRelativeImportExtensions": true
+  }
+}

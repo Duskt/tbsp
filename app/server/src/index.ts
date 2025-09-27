@@ -1,6 +1,5 @@
 import { Elysia, file } from 'elysia';
 import staticPlugin from '@elysiajs/static';
-import queueManager from './queue.ts';
 import sql, {
   createChatroomsTable,
   createMessageTable,

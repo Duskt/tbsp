@@ -2,20 +2,19 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import QueueButton from '../components/QueueButton.vue'
-import themes from '@tbsp/types/theme.ts'
+import themes from '@tbsp/mafia/theme.ts'
+import ws from '../ws'
 const router = useRouter()
 
 onMounted(() => {
-console.log(wsCon, wsCon.ws);
-wsCon.listen((e) => {
+ws.onmessage((e) => {
   console.log("got msg!!!", e);
-  if (!e.data.msg.startsWith('You')) {
-    console.warn('Unknown WS message:', e.data.msg)
-    return
+  if (e.data.kind !== "queue") {
+    console.warn(`Unexpected message received of kind ${e.data.kind}`);
+    return;
   }
   router.push('/chatroom')
 })
-console.log(wsCon);
 })
 </script>
 

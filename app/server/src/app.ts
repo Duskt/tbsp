@@ -1,7 +1,7 @@
-import { RouterTypes } from 'bun';
-import { WSMsg, read, write } from '@tbsp/web/ws/protocol.ts';
+import { type RouterTypes } from 'bun';
+import { type WSMsg, read, write } from '@tbsp/web/ws/protocol.ts';
 import { HTTPRegister, RouteRegister } from '@tbsp/web';
-import WebSocketRegister, { TbspWebSocketHandler } from '@tbsp/web/ws';
+import WebSocketRegister, { type TbspWebSocketHandler } from '@tbsp/web/ws';
 import fs from 'node:fs';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';

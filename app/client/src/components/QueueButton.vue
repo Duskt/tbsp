@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { type Theme } from '@tbsp/types/theme.ts'
+import { type Theme } from '@tbsp/mafia/theme.ts'
 import palette from '../style.ts'
+import ws from '../ws'
+
 const { theme } = defineProps<{ theme: Theme }>()
 let playersQueued = ref(0)
 
 function joinQueue() {
-  wsCon.send(theme.id)
+  ws.send(theme.id)
 }
 </script>
 
