@@ -1,0 +1,38 @@
+services:
+  tbsp-database:
+    container_name: tbsp-database
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tbsp}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  dev:
+    # Run the TBSP server, assuming the database is open to connect on postgres://tbsp-database:5432
+    profiles: [dev] # must explicitly select development mode
+    stdin_open: true
+    tty: true
+    build: # build the image via ``docker build -f Dockerfile.dev .`` :
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      DEV: true
+      TBSP_DBHOST: tbsp-database
+      TBSP_DBPORT: 5432
+    env_file:
+      - path: ./.env
+        required: false
+    ports:
+      - "9001:9001"
+    depends_on:
+      - tbsp-database
+volumes:
+  postgres_data:

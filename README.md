@@ -1,22 +1,24 @@
-This repository is a W.I.P.
+# TBSP
 
-TBSP ('the big scum project'; preliminary name) is a webserver designed to host
+NOTE: This repository is a W.I.P.
+
+TBSP ("the big scum project"; preliminary name) is a webserver designed to host
 ranked competitive games of Mafia.
 
-# Installation & Setup
+## Installation & Setup
 
-[See SETUP.md](SETUP.md#Installation)
+[See SETUP.md](./SETUP.md)
 
-# Stack Architecture
+## Stack Architecture
 
 All source code producing JavaScript output is written using TypeScript.
 Software stack: Vue - Bun - Postgres
 
 - Vue.js: frontend framework (Single-Page application)
 - Bun: typescript backend runtime (incl. uWebSockets)
-- Postgresql
+- PostgreSQL
 
-# Monorepo Structure
+## Monorepo Structure
 
 This is a **monorepo** (a version-controlled repository containing
 semantically-related but otherwise encapsulated workspaces). Workspaces are

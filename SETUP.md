@@ -1,4 +1,6 @@
-# Installation
+# Setup Guide
+
+## Installation
 
 This project depends on [Bun](https://bun.com/get) (JS runtime) and
 [PostgreSQL](https://www.postgresql.org/download/) (Database management). Listed
@@ -14,7 +16,7 @@ operating systems:
 
 Then, follow the [Setup guide](#Setup).
 
-## Nix
+### Nix
 
 If using Nix, you don't need to install any dependencies yourself. Skip straight
 to cloning the repository, and then use `nix-shell` to install all dependencies
@@ -23,7 +25,7 @@ into the environment and set up Postgres.
 This creates a developer environment which you should `exit` once finished
 (closing the postgres daemon).
 
-## Manual
+### Manual
 
 The dependencies are linked below: (Note: On Windows, this setup has not been
 tested; please leave an issue or contact maintainers for help.)
@@ -43,7 +45,7 @@ postgres (PostgreSQL) 17.6
 $ psql postgres -AXc "SELECT * FROM pg_database"
 ```
 
-## Docker
+### Docker
 
 The development image (`Dockerfile.dev`) is a minimal docker setup with Postgres
 and Bun which can run the server.
@@ -56,7 +58,7 @@ and Bun which can run the server.
 (Remember to `docker container prune` and `docker rmi tbsp-dev` when you want to
 clean up.
 
-## Homebrew
+### Homebrew
 
 Homebrew provides a convenient installation process from the CLI. These commands
 are taken from the download pages (linked at the top): you should check they are
@@ -69,7 +71,7 @@ not outdated before using.
   - `brew install postgresql@17`
   - Follow the instructions in the output to set up Postgres.
 
-# Setup
+## Setup
 
 Create a database: (You must be logged in as your default user - the one which
 will run the project.)
