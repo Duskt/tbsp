@@ -1,5 +1,5 @@
 import { ClientWebSocketController } from '@tbsp/web/ws/client.ts';
-import themes, { Theme } from '@tbsp/mafia/theme';
+import themes, { Theme } from '@tbsp/mafia/theme.ts';
 import { type WSMsg } from '@tbsp/web/ws/protocol.ts';
 import type { ServerWebSocket } from 'bun';
 
