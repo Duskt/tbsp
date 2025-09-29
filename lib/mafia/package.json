@@ -1,0 +1,18 @@
+{
+  "name": "@tbsp/mafia",
+  "version": "0.0.0",
+  "type": "module",
+  "files": [
+    "*"
+  ],
+  "exports": {
+    "./*.ts": "./*.ts",
+    "./*.js": "./dist/*.js",
+    "./*": "./dist/*.js"
+  },
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "bunx tsc --noEmit"
+  }
+}

@@ -12,6 +12,7 @@ playwright-report/
 
 # production
 /build
+**/dist
 
 # MacOS metadata
 .DS_Store
@@ -42,7 +43,6 @@ package-lock.json
 # bun installments (should only be in node_modules)
 **/*.bun
 
-client/dist*
 client/*.local
 
 # Editor directories and files

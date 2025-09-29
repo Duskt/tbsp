@@ -1,0 +1,21 @@
+{
+  "name": "@tbsp/server",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "client:build": "bun build ../client/src/index.ts > index.js",
+    "start": "bun run src/index.ts",
+    "dev": "bun run --cwd=\"$(realpath ./../..)\" dev",
+    "lint": "bunx tsc --noEmit"
+  },
+  "dependencies": {
+    "@tbsp/mafia": "*",
+    "@tbsp/web": "*",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.22",
+    "typescript": "^5.9.2"
+  }
+}

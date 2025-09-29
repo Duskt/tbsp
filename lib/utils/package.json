@@ -1,0 +1,22 @@
+{
+  "name": "@tbsp/utils",
+  "version": "0.0.0",
+  "exports": {
+    "./*.ts": "./*.ts",
+    "./*.js": "./dist/*.js",
+    "./*": "./dist/*.js"
+  },
+  "description": "",
+  "files": [
+    "*"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "bunx tsc"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "^1.2.22"
+  }
+}

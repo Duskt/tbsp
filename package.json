@@ -1,24 +1,29 @@
 {
-  "name": "thebigscumproject",
+  "name": "tbsp",
   "version": "0.0.0",
   "description": "A web server and client built with sockets to implement real-time chatrooms and host games of Mafia, a popular social deception-based game.",
   "type": "module",
   "license": "ISC",
-  "author": "Duskt (duskt@github.com)",
+  "contributors": [
+    "Duskt (duskt@github.com)",
+    "Liam Lethbridge (liam-m-lethbridge@github.com)",
+    "Tom Heaton (tomheaton@github.com)"
+  ],
   "scripts": {
-    "dev": "bun run --cwd=client build; bun run --cwd=server src/index.ts;",
+    "dev": "bun run --cwd=./app/client build; bun run --cwd=./app/server src/index.ts;",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docker:up": "docker-compose up -d --build", 
+    "lint:imports": "grep -Er --include=*.ts --include=*.vue --exclude-dir=node_modules --exclude-dir=dist '\\w+\\.js'",
+    "docker:up": "docker-compose up -d --build",
     "docker:down": "docker-compose down"
   },
   "workspaces": [
-    "server",
-    "client"
+    "app/server",
+    "app/client",
+    "lib/*"
   ],
-  "dependencies": {
-    "postgres": "^3.4.7"
-  },
   "devDependencies": {
-    "bun-types": "^1.2.22"
+    "@arethetypeswrong/cli": "^0.18.2",
+    "prettier": "3.6.2",
+    "typescript": "^5.9.2"
   }
 }

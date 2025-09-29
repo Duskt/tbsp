@@ -1,0 +1,24 @@
+{
+  "name": "@tbsp/web",
+  "version": "0.0.0",
+  "description": "A web server and client built with sockets which supplies the framework for the TBSP HTTP server and WS connections.",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./ws": "./dist/ws/index.js",
+    "./*.ts": "./*.ts",
+    "./*.js": "./dist/*.js",
+    "./*": "./dist/*.js"
+  },
+  "files": [
+    "*"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "bunx tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.22"
+  }
+}

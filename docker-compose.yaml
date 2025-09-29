@@ -15,6 +15,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+  dev:
+    # Run the TBSP server, assuming the database is open to connect on postgres://tbsp-database:5432
+    profiles: [dev] # must explicitly select development mode
+    stdin_open: true
+    tty: true
+    build: # build the image via ``docker build -f Dockerfile.dev .`` :
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      DEV: true
+      TBSP_DBHOST: tbsp-database
+      TBSP_DBPORT: 5432
+    env_file:
+      - path: ./.env
+        required: false
+    ports:
+      - "9001:9001"
+    depends_on:
+      - tbsp-database
 volumes:
   postgres_data:
