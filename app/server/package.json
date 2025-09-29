@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "client:build": "bun build ../client/src/index.ts > index.js",
     "start": "bun run src/index.ts",
-    "dev": "bun run --cwd=\"$(realpath ./..)\" dev",
+    "dev": "bun run --cwd=\"$(realpath ./../..)\" dev",
     "lint": "bunx tsc --noEmit"
   },
   "dependencies": {
