@@ -1,7 +1,7 @@
 import { type RouterTypes } from 'bun';
 import { type WSMsg, read, write } from '@tbsp/web/ws/protocol.ts';
-import { HTTPRegister } from '@tbsp/web';
-import WebSocketRegister, { type TbspWebSocketHandler } from '@tbsp/web/ws';
+import { HTTPRegister } from '@tbsp/web/index.ts';
+import WebSocketRegister, { type TbspWebSocketHandler } from '@tbsp/web/ws/index.ts';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type RoutePath = string;
