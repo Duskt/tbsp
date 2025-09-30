@@ -16,4 +16,6 @@ if test -e "$(find . -maxdepth 1 -name '*.sh' -print -quit)"; then
 fi;
 EOF
 
+RUN bun install;
+
 CMD ["bun", "dev"]

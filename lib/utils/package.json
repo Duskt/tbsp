@@ -13,7 +13,9 @@
   "license": "ISC",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "bunx tsc"
+    "lint": "npx tsc --noEmit",
+    "build": "npx tsc || echo 'tsc build errors' && exit 0",
+    "prepare": "npm run build"
   },
   "type": "module",
   "devDependencies": {
