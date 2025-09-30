@@ -166,12 +166,6 @@ export default class TBSPApp {
     let routeEntries: MapIterator<[string, { [method: string]: RouteHandler }]> = allPaths
       .keys()
       .map((path) => {
-        for (const i of path) {
-          if (['*', ':', '?', '('].includes(i))
-            throw new Error(
-              'TBSP TODO: Ensure WebSocket/HTTP paths with matching URL patterns do not collide; use Bun API.',
-            ); // TODO
-        }
         let httpReg = this.httpRegisters.get(path);
         let wsReg = this.wsRegisters.get(path);
         this.debug(
