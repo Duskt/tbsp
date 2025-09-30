@@ -1,27 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { User } from '@tbsp/mafia/user.ts'
-import { Message } from '@tbsp/mafia/message.ts'
-import InputBox from './chat/InputBox.vue'
-import ws from '../ws'
-import type { ClientWebSocketListener } from '@tbsp/web/ws'
+import { ref } from 'vue';
+import { User } from '@tbsp/mafia/user.ts';
+import { Message } from '@tbsp/mafia/message.ts';
+import InputBox from '../chat/InputBox.vue';
 // Unique ID counter
 
-let id = 0
-const dayTime = ref(true)
-const new_message = ref('')
-const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }])
+let id = 0;
+const dayTime = ref(true);
+const new_message = ref('');
+const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }]);
+const { ws } = defineProps<{ ws: WebSocket }>();
 
 // this function receives a message from the server and updates the local chat_box array
-ws.onmessage((event) => {
-  if (event.data.kind !== 'chat') return;
-  const { author, msg } = event.data
-  chat_box.value.push({ id: id++, text: msg, username: author })
-})
-
+ws.onmessage = (event) => {
+  const { username, messageContent } = JSON.parse(event.data);
+  chat_box.value.push({ id: id++, text: messageContent, username: username });
+};
 // to call if ws is broken?
 async function requestMessages() {
-  ws.send({ id: id })
+  ws.send(JSON.stringify({ id: id }));
 }
 </script>
 
@@ -42,11 +39,12 @@ async function requestMessages() {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100vh;
-  width: 70vw;
   padding: 1rem;
-  box-sizing: border-box;
-  background-color: #0000005f;
+  /* box-sizing: border-box; */
+  background-color: #3d3d3d;
+
+  flex: 1; /* fill remaining space */
+  overflow-y: auto;
 }
 
 .chat-messages {
@@ -59,6 +57,7 @@ async function requestMessages() {
   padding: 0;
   color: #ffffff;
   margin: 0 0 1rem 0;
+  font-size: 12px;
 }
 
 .chat-message {
