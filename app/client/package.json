@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bun --cwd=\"$(realpath ./../..)\" dev",
+    "dev": "npm run --cwd=\"$(realpath ./../..)\" dev",
     "test": "echo 'ERROR: no test specified' && exit 1",
-    "build": "bunx --bun vite build --mode development",
-    "lint": "bunx tsc --noEmit"
+    "build": "npx vite build --mode development",
+    "lint": "npx tsc --noEmit"
   },
   "dependencies": {
     "pinia": "^3.0.3",
