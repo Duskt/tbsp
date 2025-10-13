@@ -21,6 +21,7 @@
     "prepare": "npm run build"
   },
   "dependencies": {
+    "bun": "^1.3.0",
     "urlpattern-polyfill": "^10.1.0"
   },
   "devDependencies": {

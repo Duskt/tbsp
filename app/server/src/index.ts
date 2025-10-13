@@ -1,5 +1,5 @@
-import TBSPApp from './middleware';
-import { File, PublicDirectory } from './middleware/static.ts';
+import TBSPApp from '@tbsp/web/middleware/index.ts';
+import { File, PublicDirectory } from '@tbsp/web/middleware/static.ts';
 import sql, {
   createChatroomsTable,
   createMessageTable,
