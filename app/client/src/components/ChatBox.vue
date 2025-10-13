@@ -13,9 +13,7 @@ const new_message = ref('')
 const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }])
 
 // this function receives a message from the server and updates the local chat_box array
-ws.onmessage((event) => {
-  if (event.data.kind !== 'chat') return;
-  const { author, msg } = event.data
+ws.onmessage('chat.message', ({data: {author, msg}}) => {
   chat_box.value.push({ id: id++, text: msg, username: author })
 })
 

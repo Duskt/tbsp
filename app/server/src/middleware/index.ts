@@ -1,7 +1,7 @@
 import { type RouterTypes } from 'bun';
-import { type WSMsg, read, write } from '@tbsp/web/ws/protocol.ts';
+import { read, type WebSocketMessageMap } from '@tbsp/web/ws/protocol.ts';
 import { HTTPRegister } from '@tbsp/web';
-import WebSocketRegister, { type TbspWebSocketHandler } from '@tbsp/web/ws';
+import WebSocketRegister from '@tbsp/web/ws';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type RoutePath = string;
@@ -15,18 +15,23 @@ type HttpRouteObject = {
   [path: string]: RegisterObject<HTTPMethod, RouteHandler>;
 };
 
-function checkDev(...vars: string[]) {
+function checkEnv(vars: string[], message?: string) {
   for (const v of vars) {
     let value = import.meta.env[v];
     if (value !== undefined && value !== '') {
-      console.log(`Found environment variable ${v} (='${value}'); enabling development mode.`);
+      if (message !== undefined)
+        console.log(`Found environment variable ${v} (='${value}'). ${message}`);
       return true;
     }
   }
   return false;
 }
 
-const DEV_MODE = checkDev('DEV', 'DEV_MODE', 'DEVELOPMENT', 'DEVELOPMENT_MODE');
+/*const DEV_MODE = checkEnv(
+  ['DEV', 'DEV_MODE', 'DEVELOPMENT', 'DEVELOPMENT_MODE'],
+  'Enabling development mode.',
+);*/
+const DEBUG_MODE = checkEnv(['DEBUG', 'DEBUG_MODE'], 'Enabling debug mode.');
 
 const upgrade: RouteHandler = (req, server) => {
   // I think the response we return is overridden
@@ -72,15 +77,15 @@ export default class TBSPApp {
   wsRegisters: Map<RoutePath, WebSocketRegister<'server'>>;
   logDebug: boolean;
   constructor(init?: TBSPAppInitOptions) {
-    let { logDebug = false } = init ?? {};
+    let { logDebug = DEBUG_MODE } = init ?? {};
     this.httpRegisters = new Map();
     this.wsRegisters = new Map();
     this.logDebug = logDebug;
   }
 
-  debug(msg: string) {
+  debug(...msg: any) {
     if (!this.logDebug) return;
-    console.log(msg);
+    console.log(...msg);
   }
 
   displayRegisterMap(register: Map<string, { display: () => string }>, linePrefix = '') {
@@ -134,13 +139,10 @@ export default class TBSPApp {
     return this;
   }
 
-  websocket(
-    path: string,
-    wsRegisterConstructor: (ws: WebSocketRegister<'server'>) => WebSocketRegister<'server'> | void,
-  ) {
+  websocket(path: string, wsCallback: (ws: WebSocketRegister<'server'>) => any) {
     // call the new constructor with a new register
-    let newRegister = new WebSocketRegister(path);
-    let r = wsRegisterConstructor(newRegister);
+    let newRegister = new WebSocketRegister<'server'>();
+    let r = wsCallback(newRegister);
     // allow returned value to override for more flexibility
     if (r !== undefined) newRegister = r;
 
@@ -197,19 +199,19 @@ export default class TBSPApp {
             httpReg.handlers['GET'] = respondOrUpgrade(httpGetHandler);
           }
         } // otherwise httpReg only - leave it alone
-        return [path, httpReg.handlersObject()];
+        return [path, httpReg.handlers];
       });
 
     return Object.fromEntries(routeEntries);
   }
 
   getCompiledWebSocket(): Bun.WebSocketHandler<{ origin: URL }> {
-    let debug = this.logDebug ? console.log : (_: string) => {};
+    let debug = this.logDebug ? console.log : (..._: any) => {};
     let wsRegisters = this.wsRegisters;
     let websocket: Bun.WebSocketHandler<{ origin: URL }> = {
       async message(ws, message: Buffer<ArrayBuffer>) {
         let decodedMsg = await read(new Blob([message]));
-        debug(`Got message ${message.toString()} which decoded to ${decodedMsg}`);
+        debug(`Got message ${message.toString()} which decoded to `, decodedMsg);
         if (decodedMsg instanceof Error) {
           console.error(
             `Couldn't decode message ${message}: possible other formats: utf8 ${message.toString('utf8')}`,
@@ -220,21 +222,23 @@ export default class TBSPApp {
         let path = ws.data.origin.pathname;
 
         wsRegisters.forEach((wsReg, wsPath) => {
-          debug(`Checking register ${wsReg} (at ${wsPath}) for match at ${path}`);
+          debug('Checking register', wsReg, `(at ${wsPath}) for match at ${path}`);
           if (wsPath !== path) return; // TODO: match globs, pass params, etc
-          let msgCallbacks = wsReg.handlers['message'];
-          debug(`Matched. Got onmessage callbacks: ${msgCallbacks}`);
+          let msgReg = wsReg.handlers['message'];
+          debug('Matched. Got onmessage register:', msgReg);
+          if (msgReg === undefined) return;
+          // TODO: let WebSocketMessageRegister (and all registers ideally) provide 'match(x)' themselves
+          let msgCallbacks = msgReg.handlers[decodedMsg.kind as keyof WebSocketMessageMap];
+          debug('Got msgCallbacks:', msgCallbacks);
           if (msgCallbacks === undefined) return;
-          for (let f of msgCallbacks as TbspWebSocketHandler<'message'>[]) {
+          for (let f of msgCallbacks) {
             f(ws, decodedMsg);
           }
         });
       },
       open(ws) {
         debug(`Opened WebSocket connection from ${ws.data.origin}.`);
-        wsRegisters.values().forEach((wsReg) => {
-          wsReg.match(ws.data.origin.pathname, 'open', [ws]);
-        });
+        // TODO
       },
     };
     return websocket;
@@ -251,7 +255,7 @@ export default class TBSPApp {
       // convert our mutable Map to an object { '/path': { 'GET': <handler> } }
       routes,
       websocket,
-      fetch(req, server) {
+      fetch(req, _server) {
         let origin = new URL(req.url);
         console.log(`Fallback at ${origin}`);
         if (origin.protocol.startsWith('http')) {

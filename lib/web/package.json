@@ -6,19 +6,22 @@
   "exports": {
     ".": "./dist/index.js",
     "./ws": "./dist/ws/index.js",
-    "./*.ts": "./*.ts",
+    "./*.ts": "./src/*.ts",
     "./*.js": "./dist/*.js",
     "./*": "./dist/*.js"
   },
   "files": [
-    "*"
+    "src/**/*"
   ],
   "license": "ISC",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "bun test --config=../../bunfig.toml",
     "lint": "npx tsc --noEmit",
     "build": "npx tsc",
     "prepare": "npm run build"
+  },
+  "dependencies": {
+    "urlpattern-polyfill": "^10.1.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.22"

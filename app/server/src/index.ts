@@ -18,7 +18,7 @@ const PORT = 9001;
 const CLIROOT = '../client/dist';
 const clients = new Set<ServerWebSocket<{}>>();
 
-let x = new TBSPApp()
+new TBSPApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
   .use(PublicDirectory(CLIROOT))
@@ -26,10 +26,10 @@ let x = new TBSPApp()
   .websocket('/', (ws) =>
     ws
       .onopen((ws) => console.log(`Got WS connection from ${ws.remoteAddress}`))
-      .onmessage(queueManager.addToQueue),
+      .onmessage('global.queue', queueManager.addToQueue),
   )
   .websocket('/messages', (ws) => {
-    ws.onmessage(async (ws, message) => {
+    ws.onmessage('chat.message', async (ws, message) => {
       console.log('Received:', message);
 
       // temporary fixes: just setting IDs to 0

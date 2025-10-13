@@ -8,7 +8,7 @@ const { theme } = defineProps<{ theme: Theme }>()
 let playersQueued = ref(0)
 
 function joinQueue() {
-  ws.send({ kind: "queue", protocol_version: 1, theme: theme.id })
+  ws.send({ kind: "global.queue", protocol_version: 1, theme: theme.id })
 }
 </script>
 

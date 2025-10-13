@@ -6,20 +6,24 @@ interface BaseWSMessage {
 }
 
 export interface WSJoinQueue extends BaseWSMessage {
-  kind: 'queue';
+  kind: 'global.queue';
   theme: string;
 }
 
 export interface WSChatMessage extends BaseWSMessage {
-  kind: 'chat';
+  kind: 'chat.message';
   author: string;
   msg: string;
   chatroomId: string;
 }
 
-export type WSMsg = WSChatMessage | WSJoinQueue;
+type AnyWebSocketMessage = WSJoinQueue | WSChatMessage;
+export type WebSocketMessageMap = {
+  [Kind in AnyWebSocketMessage['kind']]: AnyWebSocketMessage & { kind: Kind };
+};
+export type WebSocketMessage<K extends keyof WebSocketMessageMap> = WebSocketMessageMap[K];
 
-export async function read(raw: Blob): Promise<WSMsg | Error> {
+export async function read(raw: Blob): Promise<WebSocketMessage<any> | Error> {
   console.log(raw, typeof raw);
   let text = await raw.text();
   console.log('Parsing WS message:', text);
@@ -31,6 +35,6 @@ export async function read(raw: Blob): Promise<WSMsg | Error> {
 }
 
 // todo: minify transmission and allow backwards compatibility (see github issue)
-export function write(msg: WSMsg) {
+export function write<K extends keyof WebSocketMessageMap>(msg: WebSocketMessage<K>) {
   return new Blob([JSON.stringify(msg)]);
 }

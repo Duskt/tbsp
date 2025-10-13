@@ -7,12 +7,8 @@ import ws from '../ws'
 const router = useRouter()
 
 onMounted(() => {
-ws.onmessage((e) => {
-  console.log("got msg!!!", e);
-  if (e.data.kind !== "queue") {
-    console.warn(`Unexpected message received of kind ${e.data.kind}`);
-    return;
-  }
+ws.onmessage('global.queue', (e) => {
+  console.log(e.data);
   router.push('/chatroom')
 })
 })

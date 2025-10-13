@@ -1,6 +1,6 @@
 import { ClientWebSocketController } from '@tbsp/web/ws/client.ts';
 import themes, { Theme } from '@tbsp/mafia/theme.ts';
-import { type WSMsg } from '@tbsp/web/ws/protocol.ts';
+import { type WebSocketMessage } from '@tbsp/web/ws/protocol.ts';
 import type { ServerWebSocket } from 'bun';
 
 type WS = ServerWebSocket<{}>;
@@ -28,10 +28,7 @@ class QueueManager {
   getQueue(themeId: string) {
     return this.queues.find((v) => themeId === v.theme.id);
   }
-  addToQueue = (ws: WS, msg: WSMsg) => {
-    if (msg.kind !== 'queue') {
-      return;
-    }
+  addToQueue = (ws: WS, msg: WebSocketMessage<'global.queue'>) => {
     let q = this.getQueue(msg.theme);
 
     // invalid theme_id
