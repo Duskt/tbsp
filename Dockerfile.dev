@@ -4,18 +4,8 @@
 FROM oven/bun:1-alpine
 
 # copy over everything (excl. ``.dockerignore``)
-WORKDIR /app
+WORKDIR /tbsp
 COPY . .
 
-# if copying files from windows: remove carriage returns from shell scripts
-RUN <<EOF
-if test -e "$(find . -maxdepth 1 -name '*.sh' -print -quit)"; then
-	for f in *.sh; do
-		tr -d '\r' < "$f" > "$f.tmp"; mv "$f.tmp" "$f";
-	done;
-fi;
-EOF
-
 RUN bun install;
-
 CMD ["bun", "dev"]

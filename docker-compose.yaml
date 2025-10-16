@@ -34,5 +34,12 @@ services:
       - "9001:9001"
     depends_on:
       - tbsp-database
+    volumes:
+      - type: bind
+        source: ./app
+        target: /tbsp/app
+      - type: bind
+        source: ./lib
+        target: /tbsp/lib
 volumes:
   postgres_data:
