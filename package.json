@@ -14,7 +14,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:imports": "grep -Er --include=*.ts --include=*.vue --exclude-dir=node_modules --exclude-dir=dist '\\w+\\.js'",
     "docker:up": "docker-compose up -d --build",
-    "docker:down": "docker-compose down"
+    "docker:down": "docker-compose down",
+    "build-lib": "npm run --cwd=./lib/web build; npm run --cwd=./lib/mafia build; npm run --cwd=./lib/utils build;"
   },
   "workspaces": [
     "app/server",
