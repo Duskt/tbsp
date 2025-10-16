@@ -6,14 +6,14 @@ import sql, {
   createUserTable,
   createUsersInChatroomTable,
   createFakeData,
+  createGameRoomTable,
+  drop_tables,
+  createAllTables,
 } from './db.ts';
 import queueManager from './queue.ts';
 import type { ServerWebSocket } from 'bun';
-
-createUserTable();
-createChatroomsTable();
-createMessageTable();
-createUsersInChatroomTable();
+// drop_tables();
+createAllTables();
 const PORT = 9001;
 const CLIROOT = '../client/dist';
 const clients = new Set<ServerWebSocket<{}>>();
@@ -22,8 +22,8 @@ let x = new TBSPApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
   .use(PublicDirectory(CLIROOT))
-  .get('/', File(`${CLIROOT}/index.html`))
-  .websocket('/', (ws) =>
+  .get('/*', File(`${CLIROOT}/index.html`))
+  .websocket('/*', (ws) =>
     ws
       .onopen((ws) => console.log(`Got WS connection from ${ws.remoteAddress}`))
       .onmessage(queueManager.addToQueue),
