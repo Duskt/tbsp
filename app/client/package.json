@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npm run --cwd=\"$(realpath ./../..)\" dev",
     "test": "echo 'ERROR: no test specified' && exit 1",
-    "build": "npx vite build --mode development",
+    "build": "bunx --bun vite build --mode development",
     "lint": "npx tsc --noEmit"
   },
   "dependencies": {

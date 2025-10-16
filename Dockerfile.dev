@@ -7,10 +7,11 @@ FROM oven/bun:1.3-alpine
 WORKDIR /tbsp
 COPY . .
 
-# vite attempts to call node, which doesn't exist
+# `bunx vite` attempts to call node, which doesn't exist
 # bun will try to install node in the docker container, which
 # hangs for whatever reason.
-# this was painful to debug.
+# this was painful to debug. it also doesn't actually
+# work, so i have to use `bunx --bun vite` instead
 RUN ln -s /usr/local/bin/bun /bin/node;
 RUN bun install -D;
 RUN bun run build-lib;
