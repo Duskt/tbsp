@@ -34,12 +34,18 @@ services:
       - "9001:9001"
     depends_on:
       - tbsp-database
-    volumes:
-      - type: bind
-        source: ./app
-        target: /tbsp/app
-      - type: bind
-        source: ./lib
-        target: /tbsp/lib
+    develop:
+      watch:
+        # Issues:
+        # Can't do anything which would require bun install or other commands used at build-time
+        # ./lib packages aren't rebuild and reinstalled for use on client/server
+        - action: sync+restart
+          path: ./app
+          target: /tbsp/app
+          ignore: node_modules
+        - action: sync+restart
+          path: ./lib
+          target: /tbsp/lib
+          ignore: node_modules
 volumes:
   postgres_data:
