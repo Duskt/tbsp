@@ -8,10 +8,9 @@
  */
 {
   "extends": "../../tsconfig.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "src/**/*"],
   "exclude": ["src/**/__tests__/*"], // only excludes those specified by `include`
   "compilerOptions": {
-
     "module": "es2022",
     "moduleResolution": "bundler",
     // For Vite, the actual compilation target is determined by the

@@ -61,7 +61,7 @@ export async function createChatroomsTable() {
   await sql`
 CREATE TABLE IF NOT EXISTS chatrooms (
   chatroomId UUID PRIMARY KEY,
-  gameId int
+  gameId UUID REFERENCES games(gameId)
   )
 `;
 }
@@ -76,6 +76,54 @@ CREATE TABLE IF NOT EXISTS usersInChatroom (
 `;
 }
 
+// create gameroom table for users in gameroom
+export async function createGameRoomTable() {
+  await sql`
+CREATE TABLE IF NOT EXISTS games(
+  gameId UUID primary key
+)
+  `;
+}
+export async function createAllTables() {
+  // create game table
+  await sql`
+CREATE TABLE IF NOT EXISTS games(
+  gameId UUID primary key
+)
+  `;
+  // create users table
+  await sql`
+  CREATE TABLE IF NOT EXISTS users (
+    userId UUID PRIMARY KEY,
+    username VARCHAR(16),
+    passwordHash TEXT
+  )
+`;
+  // create chatroom table
+  await sql`
+CREATE TABLE IF NOT EXISTS chatrooms (
+  chatroomId UUID PRIMARY KEY,
+  gameId UUID REFERENCES games(gameId)
+  )
+`;
+  // create users in chatrooms table
+  await sql`
+CREATE TABLE IF NOT EXISTS usersInChatroom (
+  chatroomId UUID REFERENCES chatrooms(chatroomId),
+  userId UUID REFERENCES users(userId)
+  )
+`;
+  // create messages table
+  await sql`
+CREATE TABLE IF NOT EXISTS messages (
+  messageId SERIAL PRIMARY KEY,
+  chatRoomId UUID REFERENCES chatrooms(chatroomId),
+  timestamp timestamp,
+  userId uuid REFERENCES users(userId),
+  messageContent VARCHAR(512)
+)
+`;
+}
 // create some fake data so we can use the databases without errors
 export async function createFakeData() {
   let chatRoomId = '00000000-0000-0000-0000-000000000001';
@@ -114,6 +162,17 @@ export async function createFakeData() {
     console.error('Failed to create chatroom:', error);
   }
   console.log('created? fake data.');
+}
+
+export async function drop_tables() {
+  await sql`
+  DROP TABLE IF EXISTS
+  usersInChatRoom,
+  chatrooms,
+  messages,
+  users,
+  games
+  `;
 }
 
 // Start of game:
