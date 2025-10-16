@@ -1,4 +1,4 @@
-import TBSPApp from './index.ts';
+import TBSPApp from '../server.ts';
 import fs from 'node:fs';
 
 function debugPath<T>(path: string, fallback: T) {

@@ -16,6 +16,7 @@
   "license": "ISC",
   "scripts": {
     "test": "bun test --config=../../bunfig.toml",
+    "qtest": "bun test --config=../../bunfig.toml 2>&1 | tail -n 5",
     "lint": "npx tsc --noEmit",
     "build": "npx tsc",
     "prepare": "npm run build"

@@ -5,7 +5,7 @@ import {
   WebSocketEventKeys,
   type WebSocketEventMap,
   type TbspWebSocketHandlerMap,
-} from '../../src/ws/index.ts';
+} from '../../src/register/ws.ts';
 
 describe('Types', () => {
   test('WebSocketEventKeys', () => {

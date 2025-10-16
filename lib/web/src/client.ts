@@ -1,15 +1,16 @@
-import { type RoutePath } from '../index.ts';
-import WebSocketEventRegister, {
+import type { RouteString } from './route.ts';
+import {
+  WebSocketEventRegister,
   type WebSocketCallback,
   type WebSocketEvent,
   type WebSocketHandlerMap,
-} from './index.ts';
-import { type WebSocketMessage, write, type WebSocketMessageMap } from './protocol.ts';
+} from './register/ws.ts';
+import { type WebSocketMessage, write, type WebSocketMessageMap } from './ws/protocol.ts';
 
 export class ClientWebSocketController extends WebSocketEventRegister<'client'> {
   ws: WebSocket;
-  path: RoutePath;
-  constructor(path: RoutePath) {
+  path: RouteString;
+  constructor(path: RouteString) {
     super();
     this.path = path;
     this.ws = new WebSocket(path);
@@ -34,7 +35,7 @@ export class ClientWebSocketController extends WebSocketEventRegister<'client'> 
   close() {
     this.ws.close();
   }
-  redirect(path: RoutePath) {
+  redirect(path: RouteString) {
     this.close();
     this.path = path;
     this.ws = new WebSocket(path);

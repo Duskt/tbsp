@@ -1,4 +1,3 @@
-import { ClientWebSocketController } from '@tbsp/web/ws/client.ts';
 import themes, { Theme } from '@tbsp/mafia/theme.ts';
 import { type WebSocketMessage } from '@tbsp/web/ws/protocol.ts';
 import type { ServerWebSocket } from 'bun';
