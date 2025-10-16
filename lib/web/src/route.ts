@@ -127,8 +127,6 @@ export class Route extends BaseRoute<RouteString> {
   }
 
   matchPath(path: string) {
-    console.log('Runtime matching my', this.value, 'with', path);
-    console.log(this.pattern.test({ pathname: path }));
     return this.pattern.test({ pathname: path });
   }
 
