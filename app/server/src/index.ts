@@ -17,7 +17,6 @@ createAllTables();
 const PORT = 9001;
 const CLIROOT = '../client/dist';
 const clients = new Set<ServerWebSocket<{}>>();
-
 new TBSPApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
@@ -46,7 +45,7 @@ new TBSPApp()
       ${chatRoomId},
       NOW(),
       ${userId},
-      ${message}
+      ${message.msg}
     )`;
         const user = await sql`SELECT * FROM users WHERE userId = ${userId} `;
         const outgoing = JSON.stringify({ username: user[0].username, messageContent: message });

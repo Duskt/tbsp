@@ -18,10 +18,13 @@ export interface WSChatMessage extends BaseWSMessage {
 }
 
 type AnyWebSocketMessage = WSJoinQueue | WSChatMessage;
+export type WebSocketMessage<K extends AnyWebSocketMessage['kind']> = Extract<
+  AnyWebSocketMessage,
+  { kind: K }
+>;
 export type WebSocketMessageMap = {
-  [Kind in AnyWebSocketMessage['kind']]: AnyWebSocketMessage & { kind: Kind };
+  [Kind in AnyWebSocketMessage['kind']]: WebSocketMessage<Kind>;
 };
-export type WebSocketMessage<K extends keyof WebSocketMessageMap> = WebSocketMessageMap[K];
 
 export async function read(raw: Blob): Promise<WebSocketMessage<any> | Error> {
   console.log(raw, typeof raw);
