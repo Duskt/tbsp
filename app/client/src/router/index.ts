@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LobbyView from '../views/Lobby.vue';
 import GameView from '../views/GameRoom.vue';
+import LoginView from '../views/Login.vue';
 
 console.log(GameView);
 
@@ -17,6 +18,11 @@ const router = createRouter({
       path: '/chatroom',
       name: 'gameroom',
       component: GameView,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
     },
   ],
 });
