@@ -84,6 +84,17 @@ CREATE TABLE IF NOT EXISTS games(
 )
   `;
 }
+
+// create cookie table for browser cookies
+export async function createCookieTable() {
+  await sql`
+CREATE TABLE IF NOT EXISTS cookies(
+  cookie text primary key
+  userId UUID REFERENCES users(userId)
+)
+  `;
+}
+
 export async function createAllTables() {
   // create game table
   await sql`
@@ -123,6 +134,13 @@ CREATE TABLE IF NOT EXISTS messages (
   messageContent VARCHAR(512)
 )
 `;
+  // create cookies table
+  await sql`
+CREATE TABLE IF NOT EXISTS cookies(
+  cookie text primary key,
+  userId UUID REFERENCES users(userId)
+)
+  `;
 }
 // create some fake data so we can use the databases without errors
 export async function createFakeData() {
@@ -172,6 +190,7 @@ export async function drop_tables() {
   messages,
   users,
   games
+  cookies
   `;
 }
 

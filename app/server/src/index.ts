@@ -11,7 +11,8 @@ import sql, {
   createAllTables,
 } from './db.ts';
 import queueManager from './queue.ts';
-import type { ServerWebSocket } from 'bun';
+import { Cookie, type ServerWebSocket } from 'bun';
+import { getUniqueCookie } from './cookie.ts';
 // drop_tables();
 createAllTables();
 const PORT = 9001;
@@ -22,7 +23,12 @@ new TBSPApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
   .use(PublicDirectory(CLIROOT))
-  .get('/*', File(`${CLIROOT}/index.html`))
+  .get('/*', await File(`${CLIROOT}/index.html`))
+  .get('/cookie', async () => {
+    return new Response('hello worlds', {
+      headers: { 'Set-Cookie': `id=${await getUniqueCookie()}` },
+    });
+  })
   .websocket('/', (ws) =>
     ws
       .onopen((ws) => console.log(`Got WS connection from ${ws.remoteAddress}`))
