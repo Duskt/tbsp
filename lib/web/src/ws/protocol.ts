@@ -26,7 +26,7 @@ export type WebSocketMessageMap = {
   [Kind in AnyWebSocketMessage['kind']]: WebSocketMessage<Kind>;
 };
 
-export async function read(raw: Blob): Promise<WebSocketMessage<any> | Error> {
+export async function read(raw: Blob): Promise<AnyWebSocketMessage | Error> {
   console.log(raw, typeof raw);
   let text = await raw.text();
   console.log('Parsing WS message:', text);

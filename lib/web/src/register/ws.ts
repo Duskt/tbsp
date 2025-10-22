@@ -1,5 +1,10 @@
 import { Register, type Agent } from './index.ts';
-import { read, type WebSocketMessage, type WebSocketMessageMap } from '../ws/protocol.ts';
+import {
+  read,
+  type AnyWebSocketMessage,
+  type WebSocketMessage,
+  type WebSocketMessageMap,
+} from '../ws/protocol.ts';
 import RouteRegister, { type RouteMapObject } from './route.ts';
 import type { RouteString } from '../route.ts';
 
@@ -162,13 +167,13 @@ export default class WebSocketRegister extends RouteRegister<WebSocketEventRegis
         for (const wsEventReg of matches) {
           let msgCallbacks = wsEventReg
             .match('message')
-            .map((v) => v.match(decodedMsg.kind as keyof WebSocketMessageMap))
+            .map((v) => v.match(decodedMsg.kind))
             .filter((v) => v !== undefined)
             .flat();
           debug('Got msgCallbacks:', msgCallbacks);
           if (msgCallbacks === undefined) continue;
           for (let f of msgCallbacks) {
-            f(ws, decodedMsg);
+            f(ws, decodedMsg as any); // TODO: no any
           }
         }
       },
