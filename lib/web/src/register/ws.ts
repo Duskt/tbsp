@@ -1,10 +1,5 @@
 import { Register, type Agent } from './index.ts';
-import {
-  read,
-  type AnyWebSocketMessage,
-  type WebSocketMessage,
-  type WebSocketMessageMap,
-} from '../ws/protocol.ts';
+import { read, type WebSocketMessage, type WebSocketMessageMap } from '../ws/protocol.ts';
 import RouteRegister, { type RouteMapObject } from './route.ts';
 import type { RouteString } from '../route.ts';
 

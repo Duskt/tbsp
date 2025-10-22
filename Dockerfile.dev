@@ -8,9 +8,7 @@ WORKDIR /tbsp
 COPY . .
 
 RUN bun install -D;
-# why do i need to do this? i have package.json workspaces
-RUN cd app/server && bun install -D;
-RUN cd app/client && bun install -D;
+# idk if i need to do this, but if i do, it needs to be in the compose watch
 RUN bun run build-lib;
 
 # `bunx vite` attempts to call node, which doesn't exist
@@ -20,5 +18,4 @@ RUN bun run build-lib;
 # work, so i have to use `bunx --bun vite` instead
 RUN bunx vite --help;
 
-RUN cd app/client && bunx vite --help && cd /tbsp;
 CMD ["bun", "dev"]
