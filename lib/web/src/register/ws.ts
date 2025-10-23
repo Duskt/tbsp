@@ -121,6 +121,19 @@ export class WebSocketEventRegister<A extends Agent> extends Register<WebSocketH
   override match<K extends WebSocketEvent>(target: K): WebSocketHandlerMap<A>[K] {
     return this.get(target) ?? [];
   }
+
+  triggerMessage<K extends keyof WebSocketMessageMap>(
+    ws: Parameters<WebSocketCallback<A, 'message', K>>[0],
+    msg: WebSocketMessage<K>,
+  ) {
+    let handlers = this.match('message')
+      .map((v) => v.match(msg.kind))
+      .filter((v) => v !== undefined)
+      .flat();
+    for (let f of handlers) {
+      f(ws as any, msg); // TODO: fix unnecessarily restricted union (https://github.com/microsoft/TypeScript/pull/47109)
+    }
+  }
 }
 
 export default class WebSocketRegister extends RouteRegister<WebSocketEventRegister<'server'>> {
@@ -159,18 +172,8 @@ export default class WebSocketRegister extends RouteRegister<WebSocketEventRegis
 
         let matches = wsRegister.match(path);
         debug('Got matches', matches);
-        for (const wsEventReg of matches) {
-          let msgCallbacks = wsEventReg
-            .match('message')
-            .map((v) => v.match(decodedMsg.kind))
-            .filter((v) => v !== undefined)
-            .flat();
-          debug('Got msgCallbacks:', msgCallbacks);
-          if (msgCallbacks === undefined) continue;
-          for (let f of msgCallbacks) {
-            f(ws, decodedMsg as any); // TODO: no any
-          }
-        }
+        // calls all matching callbacks in this obj's MessageRegisters
+        matches.forEach((wsEventReg) => wsEventReg.triggerMessage(ws, decodedMsg));
       },
       open(ws) {
         debug(`Opened WebSocket connection from ${ws.data.origin}.`);
