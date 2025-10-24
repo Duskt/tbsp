@@ -1,5 +1,5 @@
-import TBSPApp from '@tbsp/web/server.ts';
-import { File, PublicDirectory } from '@tbsp/web/middleware/static.ts';
+import { BunApp } from '@tbsp/web';
+import { File, PublicDirectory } from '@tbsp/web/middleware';
 import sql, {
   createChatroomsTable,
   createMessageTable,
@@ -17,7 +17,13 @@ createAllTables();
 const PORT = 9001;
 const CLIROOT = '../client/dist';
 const clients = new Set<ServerWebSocket<{}>>();
-new TBSPApp()
+
+// currently the type representing a single client WS connection is just the default type
+// provided by our implementation (Bun.serve), which is Bun.ServerWebSocket<Ctx>
+// we'll override this with middleware in future to separate out auth
+const TbspApp = BunApp.wrapWs((x) => x);
+
+new TbspApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
   .use(PublicDirectory(CLIROOT))
