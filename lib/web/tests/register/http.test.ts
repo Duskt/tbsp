@@ -1,32 +1,27 @@
 import { expect, test, describe } from 'bun:test';
-import HttpRegister, { HttpMethodRegister } from '../../src/register/http.ts';
+import { HttpMethodHandlerMap, HttpRouter } from '../../src/register/http.ts';
 
 describe('HttpMethodRegister', () => {
   test('addRoute', () => {
-    let mr = new HttpMethodRegister('/');
+    let mr = new HttpMethodHandlerMap('/');
     let handler = () => new Response('404');
-    expect(mr.addRoute('GET', handler).handlers).toEqual({ GET: handler });
-    expect(mr.addRoute('PUT', handler).handlers).toEqual({ GET: handler, PUT: handler });
-    expect(() => mr.addRoute('GET', handler)).toThrowError();
-  });
-  test('match', () => {
-    let mr = new HttpMethodRegister('/');
-    let handler = () => new Response('404');
-    mr.addRoute('GET', handler);
-    expect(mr.match('GET')).toBe(handler);
-    expect(mr.match('get')).toBe(handler);
-    expect(mr.match('axb')).toBeUndefined();
+    expect(mr.set('GET', handler)['_rawMap']).toEqual({ GET: handler });
+    expect(mr.set('PUT', handler)['_rawMap']).toEqual({ GET: handler, PUT: handler });
+    // no, overwrites: expect(() => mr.set('GET', handler)).toThrowError();
   });
 });
 
-describe('HttpRegister', () => {
-  test('merge', () => {
-    let handler = () => new Response('404');
-    let mr1 = new HttpMethodRegister('/').register('GET', handler);
-    let hr1 = new HttpRegister().register('/', mr1);
-    let mr2 = new HttpMethodRegister('/index.html').register('GET', handler);
-    let hr2 = new HttpRegister().register('/index.html', mr2);
-    // TODO
+describe('HttpRouter', () => {
+  test('route', () => {
+    let router = new HttpRouter();
+    router
+      .route('/', 'GET', () => new Response('GET to /'))
+      .route('/', 'POST', () => new Response('POST to /'))
+      .route('/abc', 'GET', () => new Response('GET to /abc'));
+    expect(router.keys()).toEqual(['/', '/abc']);
+    expect(router.get('/').keys()).toEqual(['GET', 'POST']);
+    expect(router.get('/abc').keys()).toEqual(['GET']);
+    expect(router.get('/never').keys()).toEqual([]);
   });
   test('compile', () => {});
 });

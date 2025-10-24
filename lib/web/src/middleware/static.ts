@@ -1,5 +1,5 @@
-import TBSPApp from '../server.ts';
 import fs from 'node:fs';
+import { BaseApp } from '../server.ts';
 
 function debugPath<T>(path: string, fallback: T) {
   try {
@@ -30,7 +30,11 @@ export function File(path: string, preload = false) {
 
 export function PublicDirectory(basePath: string, preload = false, prefix = '') {
   basePath = basePath.endsWith('/') ? basePath.slice(0, basePath.length - 1) : basePath;
-  let app = new TBSPApp();
+  let app = new BaseApp<any>({
+    wsConnFactory: () => {
+      throw new Error("WebSocket shouldn't serve static files!!?");
+    },
+  });
 
   let r = debugPath(basePath, app);
   if (r) return r;

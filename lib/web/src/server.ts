@@ -1,12 +1,14 @@
-import { type RouterTypes } from 'bun';
-import HttpRegister, { HttpMethodRegister, type HttpMethod } from './register/http.ts';
-import WebSocketRegister, { WebSocketEventRegister } from './register/ws.ts';
+import type { RouterTypes } from 'bun';
+import { HttpRouter, type HttpMethod, type HttpRouteHandler } from './register/http.ts';
 import { DEBUG_MODE } from './env.ts';
 import type { RouteString } from './route.ts';
+import { WebSocketRouter } from './ws/server.ts';
+import type { App, ServerWebSocketRegister } from './types.ts';
 
 type RouteHandler = RouterTypes.RouteHandler<string>;
 
-interface TBSPAppInitOptions {
+interface AppInitOptions<WSConn> {
+  wsConnFactory: (ws: Bun.ServerWebSocket<any>) => WSConn;
   logDebug?: boolean;
 }
 
@@ -15,14 +17,13 @@ interface TBSPAppInitOptions {
  * Uses method chaining to build a configuration object and promotes abstraction of RouteHandlers.
  * This is still missing features that might need to be implemented.
  */
-export default class TBSPApp {
-  httpRegister: HttpRegister;
-  wsRegister: WebSocketRegister;
+export class BaseApp<WSConn> implements App<WSConn> {
+  httpRouter: HttpRouter;
+  wsRouter: WebSocketRouter<WSConn>;
   logDebug: boolean;
-  constructor(init?: TBSPAppInitOptions) {
-    let { logDebug = DEBUG_MODE } = init ?? {};
-    this.httpRegister = new HttpRegister();
-    this.wsRegister = new WebSocketRegister();
+  constructor({ logDebug = DEBUG_MODE, wsConnFactory }: AppInitOptions<WSConn>) {
+    this.httpRouter = new HttpRouter();
+    this.wsRouter = new WebSocketRouter(wsConnFactory);
     this.logDebug = logDebug;
   }
 
@@ -32,17 +33,16 @@ export default class TBSPApp {
   }
 
   toString() {
-    return `HttpRegisters:\n${this.httpRegister}\n\nWebSocketRegisters:\n${this.wsRegister}`;
+    return `HttpRegisters:\n${this.httpRouter}\n\nWebSocketRegisters:\n${this.wsRouter}`;
   }
 
-  route(method: HttpMethod, path: RouteString, handler: RouteHandler) {
+  route<M extends HttpMethod, P extends RouteString>(
+    method: M,
+    path: P,
+    handler: HttpRouteHandler<P>,
+  ): this {
     this.debug(`Adding route at ${path} (${method}).`);
-    let methodReg = this.httpRegister.get(path);
-    if (methodReg === undefined) {
-      methodReg = new HttpMethodRegister(path);
-      this.httpRegister.set(path, methodReg);
-    }
-    methodReg.addRoute(method, handler);
+    this.httpRouter.route(path, method, handler);
     return this;
   }
 
@@ -59,26 +59,18 @@ export default class TBSPApp {
     return this.route('DELETE', path, handler);
   }
 
-  use(plugin: TBSPApp): this {
-    for (const k of plugin.wsRegister.keys()) {
-      let v = plugin.wsRegister.get(k);
-      if (v === undefined) continue;
-      this.wsRegister.register(k, v);
-    }
-    for (const k of plugin.httpRegister.keys()) {
-      let v = plugin.httpRegister.get(k);
-      if (v === undefined) continue;
-      this.httpRegister.register(k, v);
-    }
+  use(plugin: this): this {
+    this.wsRouter.absorb(plugin.wsRouter);
+    this.httpRouter.absorb(plugin.httpRouter);
     return this;
   }
 
-  websocket(path: RouteString, wsCallback: (ws: WebSocketEventRegister<'server'>) => void) {
-    let newWsEventRegister = new WebSocketEventRegister<'server'>();
+  websocket(path: RouteString, wsCallback: (ws: ServerWebSocketRegister<WSConn>) => void) {
+    let reg = this.wsRouter.get(path);
     // allow returned value to override for more flexibility
-    newWsEventRegister = wsCallback(newWsEventRegister) ?? newWsEventRegister;
+    reg = wsCallback(reg) ?? reg;
     // this will mergeAll if one already exists :)
-    this.wsRegister.register(path, newWsEventRegister);
+    this.wsRouter.set(path, reg);
     return this;
   }
 
@@ -88,11 +80,11 @@ export default class TBSPApp {
     // through provided HTTP routes. So our HTTP GET requests don't need to check for this,
     // only our fallback needs to match the origin.
     let wsMatchOrigin = (path: string): boolean =>
-      this.wsRegister.entries().find(([route]) => route.matchPath(path)) !== undefined;
+      this.wsRouter.routeEntries().find(([route]) => route.matchPath(path)) !== undefined;
     Bun.serve({
       port,
-      routes: this.httpRegister.compile(),
-      websocket: this.wsRegister.compile(this.logDebug),
+      routes: this.httpRouter.compile(),
+      websocket: this.wsRouter.compile(this.logDebug),
       development: true,
       fetch(req, server) {
         let origin = new URL(req.url);
@@ -107,5 +99,21 @@ export default class TBSPApp {
       },
     });
     console.log(`Listening at http://localhost:${port}`);
+  }
+}
+
+export class BunApp extends BaseApp<Bun.ServerWebSocket<{}>> {
+  constructor(init?: Omit<AppInitOptions<Bun.ServerWebSocket<never>>, 'wsConnFactory'>) {
+    super({ wsConnFactory: (x) => x, logDebug: init?.logDebug ?? DEBUG_MODE });
+  }
+  static wrapWs<WSConn>(
+    wsConnFactory: (ws: Bun.ServerWebSocket<{}>) => WSConn,
+  ): new (init?: Omit<AppInitOptions<never>, 'wsConnFactory'>) => BaseApp<WSConn> {
+    class App extends BaseApp<WSConn> {
+      constructor(init?: Omit<AppInitOptions<never>, 'wsConnFactory'>) {
+        super({ wsConnFactory, logDebug: init?.logDebug ?? DEBUG_MODE });
+      }
+    }
+    return App;
   }
 }
