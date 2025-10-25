@@ -1,10 +1,8 @@
 export class GenericMap<T extends { [K: string]: any }> {
   protected _rawMap: Partial<T>;
-  readonly clsName: string;
   readonly defaultFactory: <K extends keyof T>(key: K) => T[K];
-  constructor(defaultFactory: <K extends keyof T>(key: K) => T[K], clsName = 'GenericMap') {
+  constructor(defaultFactory: <K extends keyof T>(key: K) => T[K]) {
     this.defaultFactory = defaultFactory;
-    this.clsName = clsName;
     this._rawMap = {};
   }
   get shape(): typeof this._rawMap {
@@ -32,6 +30,6 @@ export class GenericMap<T extends { [K: string]: any }> {
     return Object.entries(this._rawMap);
   }
   toString() {
-    return `<${this.clsName} (${this.keys().join(', ')})>`;
+    return `<${this.constructor.name} (${this.keys().join(', ')})>`;
   }
 }

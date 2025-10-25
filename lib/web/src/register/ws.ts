@@ -9,7 +9,7 @@ export class WebSocketMessageRegister<Protocol extends WsMsgProtocol>
   implements Register
 {
   constructor() {
-    super((_) => [], 'WebSocketMessageRegister');
+    super((_) => []);
   }
   add<K extends keyof Protocol>(messageKind: K, handler: Protocol[K]): this {
     this.get(messageKind).push(handler);

@@ -15,7 +15,7 @@ export class HttpMethodHandlerMap<P extends RouteString> extends GenericMap<{
 }> {
   path: P;
   constructor(path: P) {
-    super((_) => undefined, 'HttpMethodRegister');
+    super((_) => undefined);
     this.path = path;
   }
 
@@ -58,7 +58,7 @@ export class HttpRouter
   implements Register
 {
   constructor() {
-    super((k) => new HttpMethodHandlerMap(k), 'HttpRouter');
+    super((k) => new HttpMethodHandlerMap(k));
   }
   route<P extends RouteString, M extends HttpMethod>(
     path: P,

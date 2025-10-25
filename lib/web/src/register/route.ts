@@ -7,8 +7,8 @@ import { Route, type RouteString } from '../route.ts';
 export abstract class GenericRouteMap<T extends { [K: RouteString]: any }> extends GenericMap<T> {
   routes: { [K: RouteString]: Route };
 
-  constructor(defaultFactory: <K extends keyof T>(key: K) => T[K], clsName = 'RouteRegister') {
-    super(defaultFactory, clsName);
+  constructor(defaultFactory: <K extends keyof T>(key: K) => T[K]) {
+    super(defaultFactory);
     this.routes = {};
   }
 

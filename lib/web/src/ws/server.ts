@@ -100,7 +100,7 @@ export class WebSocketRouter<Protocol extends WsMsgProtocol, WSConn>
     read: WsMsgReader<Protocol>,
     clientWsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn,
   ) {
-    super((_) => new SWSEventRegister(), 'WebSocketRouter');
+    super((_) => new SWSEventRegister());
     this.read = read;
     this.clientWsConnFactory = clientWsConnFactory;
   }
