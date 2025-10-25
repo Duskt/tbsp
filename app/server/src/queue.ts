@@ -1,17 +1,15 @@
 import themes, { Theme } from '@tbsp/mafia/theme.ts';
-import { type WebSocketMessage } from '@tbsp/web/ws/protocol.ts';
 import type { ServerWebSocket } from 'bun';
+import type { WebSocketMessageMap } from '@tbsp/web/tbsp';
 
-type WS = ServerWebSocket<{}>;
-
-class Queue {
+class Queue<WSConn> {
   theme: Theme;
-  waiting: WS[];
+  waiting: WSConn[];
   constructor(theme: Theme) {
     this.theme = theme;
     this.waiting = [];
   }
-  load(ws: WS, trigger: (queuers: WS[]) => void) {
+  load(ws: WSConn, trigger: (queuers: WSConn[]) => void) {
     this.waiting.push(ws);
     if (this.waiting.length >= 2) {
       trigger(this.waiting);
@@ -20,14 +18,14 @@ class Queue {
 }
 
 class QueueManager {
-  queues: Queue[];
+  queues: Queue<ServerWebSocket<{}>>[];
   constructor(themes: Theme[]) {
     this.queues = themes.map((v) => new Queue(v));
   }
   getQueue(themeId: string) {
     return this.queues.find((v) => themeId === v.theme.id);
   }
-  addToQueue = (ws: WS, msg: WebSocketMessage<'global.queue'>) => {
+  addToQueue = (ws: ServerWebSocket<{}>, msg: WebSocketMessageMap['global.queue']) => {
     let q = this.getQueue(msg.theme);
 
     // invalid theme_id

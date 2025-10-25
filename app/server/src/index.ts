@@ -1,5 +1,5 @@
-import TBSPApp from '@tbsp/web/server.ts';
-import { File, PublicDirectory } from '@tbsp/web/middleware/static.ts';
+import { BunApp } from '@tbsp/web';
+import { File, PublicDirectory } from '@tbsp/web/middleware';
 import sql, {
   createChatroomsTable,
   createMessageTable,
@@ -12,31 +12,39 @@ import sql, {
 } from './db.ts';
 import queueManager from './queue.ts';
 import type { ServerWebSocket } from 'bun';
+import { read, type TbspWsMsgProtocol } from '@tbsp/web/tbsp';
 // drop_tables();
 createAllTables();
 const PORT = 9001;
 const CLIROOT = '../client/dist';
 const clients = new Set<ServerWebSocket<{}>>();
-new TBSPApp()
+
+// currently the type representing a single client WS connection is just the default type
+// provided by our implementation (Bun.serve), which is Bun.ServerWebSocket<Ctx>
+// we'll override this with middleware in future to separate out auth
+const TbspApp = BunApp.wrapWs((x) => x);
+
+new TbspApp<TbspWsMsgProtocol>({ read })
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
   .use(PublicDirectory(CLIROOT))
   .get('/*', File(`${CLIROOT}/index.html`))
-  .websocket('/', (ws) =>
-    ws
+  .websocket('/', (register) =>
+    register
       .onopen((ws) => console.log(`Got WS connection from ${ws.remoteAddress}`))
       .onmessage('global.queue', queueManager.addToQueue),
   )
-  .websocket('/messages', (ws) => {
-    ws.onmessage('chat.message', async (ws, message) => {
-      console.log('Received:', message);
+  .websocket('/messages', (register) => {
+    register
+      .onmessage('chat.message', async (ws, message) => {
+        console.log('Received:', message);
 
-      // temporary fixes: just setting IDs to 0
-      let chatRoomId = '00000000-0000-0000-0000-000000000001';
-      let userId = '00000000-0000-0000-0000-000000000001';
+        // temporary fixes: just setting IDs to 0
+        let chatRoomId = '00000000-0000-0000-0000-000000000001';
+        let userId = '00000000-0000-0000-0000-000000000001';
 
-      try {
-        await sql`INSERT INTO messages (
+        try {
+          await sql`INSERT INTO messages (
       chatroomId,
       timestamp,
       userId,
@@ -47,19 +55,19 @@ new TBSPApp()
       ${userId},
       ${message.msg}
     )`;
-        const user = await sql`SELECT * FROM users WHERE userId = ${userId} `;
-        const outgoing = JSON.stringify({ username: user[0].username, messageContent: message });
-        // for now, I will just send to all clients but really should filter clients for the right chatrooms/gameIDs?
-        // Or could handle client-side
-        for (const client of clients) {
-          if (client.readyState === 1) {
-            client.send(outgoing);
+          const user = await sql`SELECT * FROM users WHERE userId = ${userId} `;
+          const outgoing = JSON.stringify({ username: user[0].username, messageContent: message });
+          // for now, I will just send to all clients but really should filter clients for the right chatrooms/gameIDs?
+          // Or could handle client-side
+          for (const client of clients) {
+            if (client.readyState === 1) {
+              client.send(outgoing);
+            }
           }
+        } catch (error) {
+          console.error('Failed to save message:', error);
         }
-      } catch (error) {
-        console.error('Failed to save message:', error);
-      }
-    })
+      })
       .onopen(async (ws) => {
         console.log('Client connected');
 
