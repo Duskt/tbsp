@@ -34,7 +34,7 @@ export function PublicDirectory(basePath: string, preload = false, prefix = '') 
     read: () => {
       throw new Error('Never');
     },
-    wsConnFactory: () => {
+    clientWsConnFactory: () => {
       throw new Error("WebSocket shouldn't serve static files!!?");
     },
   });

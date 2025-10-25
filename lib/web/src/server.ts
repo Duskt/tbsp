@@ -80,7 +80,7 @@ export class BaseApp<Protocol extends WsMsgProtocol, WSConn extends ClientWSConn
 
   websocket(
     path: RouteString,
-    wsCallback: (ws: ServerWebSocketRegister<Protocol, WSConn>) => void,
+    wsCallback: (register: ServerWebSocketRegister<Protocol, WSConn>) => void,
   ) {
     let reg = this.wsRouter.get(path);
     // allow returned value to override for more flexibility
@@ -133,7 +133,7 @@ export class BunApp<Protocol extends WsMsgProtocol> extends BaseApp<
     clientWsConnFactory: (ws: Bun.ServerWebSocket<{}>) => WSConn,
   ) {
     class App<Protocol extends WsMsgProtocol> extends BaseApp<Protocol, WSConn> {
-      constructor(init: Omit<AppInitOptions<Protocol, never>, 'wsConnFactory'>) {
+      constructor(init: Omit<AppInitOptions<Protocol, never>, 'clientWsConnFactory'>) {
         super({ read: init.read, clientWsConnFactory, logDebug: init.logDebug ?? DEBUG_MODE });
       }
     }
