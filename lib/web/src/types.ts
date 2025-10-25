@@ -1,6 +1,7 @@
 import type { HttpMethod, HttpRouteHandler } from './register/http.ts';
 import type { GenericRouteMap } from './register/route.ts';
 import type { RouteString } from './route.ts';
+import type { SWSEvent, SWSHandlerMap } from './ws/server.ts';
 
 export interface Register {
   add(...args: any[]): this;
@@ -26,6 +27,8 @@ export interface ClientWebSocketController<Protocol extends WsMsgProtocol> {
   close(): void;
 }
 
+export interface ClientWSConnection {}
+
 export interface ServerWebSocketRegister<Protocol extends WsMsgProtocol, WSConn> extends Register {
   onopen(callback: (ws: WSConn) => void): this;
   onclose(callback: (ws: WSConn) => void): this;
@@ -34,11 +37,15 @@ export interface ServerWebSocketRegister<Protocol extends WsMsgProtocol, WSConn>
     kind: K,
     callback: (ws: WSConn, msg: Protocol[K]) => void,
   ): this;
+  getEventListeners<E extends SWSEvent, M extends keyof Protocol>(
+    event: E,
+    msgKind: E extends 'message' ? M : undefined,
+  ): SWSHandlerMap<Protocol, WSConn, M>[E][];
 }
 
 export type Router<T extends { [R: RouteString]: any }> = Register & GenericRouteMap<T>;
 
-export interface App<Protocol extends WsMsgProtocol, WSConn> {
+export interface App<Protocol extends WsMsgProtocol, WSConn extends ClientWSConnection> {
   route<M extends HttpMethod, P extends RouteString>(
     method: M,
     path: P,

@@ -48,17 +48,18 @@ export class SWSEventRegister<Protocol extends WsMsgProtocol, WSConn>
   }
   get<K extends keyof SWSHandlerMap<Protocol, WSConn>, M extends keyof Protocol>(
     event: K,
-    kind: M,
+    kind: K extends 'message' ? M : undefined,
   ): SWSHandlerMap<Protocol, WSConn, M>[K][] {
     if (event === 'message') {
-      return this.messageRegister.get(kind);
+      return this.messageRegister.get(kind as M);
     } else {
       return this.otherEventListeners.get(event);
     }
   }
+  getEventListeners = this.get;
   add<M extends keyof Protocol, K extends keyof SWSHandlerMap<Protocol, WSConn>>(
     event: K,
-    msgKind: M,
+    msgKind: K extends 'message' ? M : never,
     callback: SWSHandlerMap<Protocol, WSConn, M>[K],
   ) {
     this.get(event, msgKind).push(callback);
@@ -89,19 +90,19 @@ export class SWSEventRegister<Protocol extends WsMsgProtocol, WSConn>
 
 export class WebSocketRouter<Protocol extends WsMsgProtocol, WSConn>
   extends GenericRouteMap<{
-    [K in RouteString]: SWSEventRegister<Protocol, WSConn>;
+    [K in RouteString]: ServerWebSocketRegister<Protocol, WSConn>;
   }>
   implements Register
 {
   read: WsMsgReader<Protocol>;
-  wsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn;
+  clientWsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn;
   constructor(
     read: WsMsgReader<Protocol>,
-    wsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn,
+    clientWsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn,
   ) {
     super((_) => new SWSEventRegister(), 'WebSocketRouter');
     this.read = read;
-    this.wsConnFactory = wsConnFactory;
+    this.clientWsConnFactory = clientWsConnFactory;
   }
   add<
     Path extends RouteString,
@@ -137,9 +138,9 @@ export class WebSocketRouter<Protocol extends WsMsgProtocol, WSConn>
         }
 
         let path = ws.data.origin.pathname as `/${string}`;
-        let match: SWSEventRegister<Protocol, WSConn> = wsRegister.get(path);
-        let conn = wsRegister.wsConnFactory(ws);
-        match.get('message', decodedMsg.kind).forEach((f) => f(conn, decodedMsg));
+        let match = wsRegister.get(path);
+        let conn = wsRegister.clientWsConnFactory(ws);
+        match.getEventListeners('message', decodedMsg.kind).forEach((f) => f(conn, decodedMsg));
       },
       open(ws) {
         debug(`Opened WebSocket connection from ${ws.data.origin}.`);
