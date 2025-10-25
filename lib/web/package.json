@@ -5,16 +5,16 @@
   "type": "module",
   "exports": {
     ".": [
-      "./dist/index.js",
-      "./src/index.ts"
+      "./src/index.ts",
+      "./dist/index.js"
     ],
     "./middleware": [
-      "./dist/middleware/index.js",
-      "./src/middleware/index.ts"
+      "./src/middleware/index.ts",
+      "./dist/middleware/index.js"
     ],
     "./tbsp": [
-      "./dist/tbsp.js",
-      "./src/tbsp.ts"
+      "./src/tbsp.ts",
+      "./dist/tbsp.js"
     ],
     "./*.ts": "./src/*.ts",
     "./ws/*.ts": "./src/ws/*.ts"
