@@ -12,6 +12,10 @@
       "./dist/middleware/index.js",
       "./src/middleware/index.ts"
     ],
+    "./tbsp": [
+      "./dist/tbsp.js",
+      "./src/tbsp.ts"
+    ],
     "./*.ts": "./src/*.ts",
     "./ws/*.ts": "./src/ws/*.ts"
   },

@@ -6,48 +6,60 @@ import { GenericMap } from '../register/index.ts';
 import { GenericRouteMap } from '../register/route.ts';
 import { WebSocketMessageRegister } from '../register/ws.js';
 import type { RouteString } from '../route.ts';
-import type { PrintEnum, Register, ServerWebSocketRegister } from '../types.ts';
-import type { WebSocketMessage, WebSocketMessageMap } from './protocol.ts';
-import { read } from './protocol.ts';
+import type {
+  PrintEnum,
+  Register,
+  ServerWebSocketRegister,
+  WsMsgProtocol,
+  WsMsgReader,
+} from '../types.ts';
 
 export type SWSEvent = PrintEnum<'drain' | keyof Bun.WebSocketEventMap>;
 
-// this is the generic type 'Ctx' (context).
-export type SWSHandlerMap<WSConn, Kind extends keyof WebSocketMessageMap = never> = {
-  message: (ws: WSConn, msg: WebSocketMessage<Kind>) => void;
+export type SWSHandlerMap<
+  Protocol extends WsMsgProtocol,
+  WSConn,
+  Kind extends keyof Protocol = never,
+> = {
+  message: (ws: WSConn, msg: Protocol[Kind]) => void;
   open: (ws: WSConn) => void;
   close: (ws: WSConn) => void;
   error: (ws: WSConn, err: Error) => void;
   drain: any;
 };
 
-type _OmitMessageSWSHandlerMap<WSConn> = {
-  [K in keyof SWSHandlerMap<WSConn> as K extends 'message' ? never : K]: SWSHandlerMap<WSConn>[K][];
+type _OmitMessageSWSHandlerMap<Protocol extends WsMsgProtocol, WSConn> = {
+  [K in keyof SWSHandlerMap<Protocol, WSConn> as K extends 'message' ? never : K]: SWSHandlerMap<
+    Protocol,
+    WSConn
+  >[K][];
 };
 
-export class SWSEventRegister<WSConn> implements ServerWebSocketRegister<WSConn> {
+export class SWSEventRegister<Protocol extends WsMsgProtocol, WSConn>
+  implements ServerWebSocketRegister<Protocol, WSConn>
+{
   messageRegister: WebSocketMessageRegister<{
-    [K in keyof WebSocketMessageMap]: SWSHandlerMap<WSConn, K>['message'][];
+    [K in keyof Protocol]: SWSHandlerMap<Protocol, WSConn, K>['message'][];
   }>;
-  otherEventListeners: GenericMap<_OmitMessageSWSHandlerMap<WSConn>>;
+  otherEventListeners: GenericMap<_OmitMessageSWSHandlerMap<Protocol, WSConn>>;
   constructor() {
     this.messageRegister = new WebSocketMessageRegister();
     this.otherEventListeners = new GenericMap((_) => []);
   }
-  get<K extends keyof SWSHandlerMap<WSConn>, M extends keyof WebSocketMessageMap>(
+  get<K extends keyof SWSHandlerMap<Protocol, WSConn>, M extends keyof Protocol>(
     event: K,
     kind: M,
-  ): SWSHandlerMap<WSConn, M>[K][] {
+  ): SWSHandlerMap<Protocol, WSConn, M>[K][] {
     if (event === 'message') {
       return this.messageRegister.get(kind);
     } else {
       return this.otherEventListeners.get(event);
     }
   }
-  add<M extends keyof WebSocketMessageMap, K extends keyof SWSHandlerMap<WSConn>>(
+  add<M extends keyof Protocol, K extends keyof SWSHandlerMap<Protocol, WSConn>>(
     event: K,
     msgKind: M,
-    callback: SWSHandlerMap<WSConn, M>[K],
+    callback: SWSHandlerMap<Protocol, WSConn, M>[K],
   ) {
     this.get(event, msgKind).push(callback);
     return this;
@@ -58,39 +70,49 @@ export class SWSEventRegister<WSConn> implements ServerWebSocketRegister<WSConn>
       this.otherEventListeners.get(k).concat(...other.otherEventListeners.get(k));
     }
   }
-  onopen(callback: SWSHandlerMap<WSConn>['open']) {
+  onopen(callback: SWSHandlerMap<Protocol, WSConn>['open']) {
     return this.add('open', null as never, callback);
   }
-  onclose(callback: SWSHandlerMap<WSConn>['close']) {
+  onclose(callback: SWSHandlerMap<Protocol, WSConn>['close']) {
     return this.add('close', null as never, callback);
   }
-  onerror(callback: SWSHandlerMap<WSConn>['error']) {
+  onerror(callback: SWSHandlerMap<Protocol, WSConn>['error']) {
     return this.add('error', null as never, callback);
   }
-  onmessage<K extends keyof WebSocketMessageMap>(
+  onmessage<K extends keyof Protocol>(
     kind: K,
-    callback: SWSHandlerMap<WSConn, K>['message'],
+    callback: SWSHandlerMap<Protocol, WSConn, K>['message'],
   ) {
     return this.add('message', kind, callback);
   }
 }
 
-export class WebSocketRouter<WSConn>
+export class WebSocketRouter<Protocol extends WsMsgProtocol, WSConn>
   extends GenericRouteMap<{
-    [K in RouteString]: SWSEventRegister<WSConn>;
+    [K in RouteString]: SWSEventRegister<Protocol, WSConn>;
   }>
   implements Register
 {
+  read: WsMsgReader<Protocol>;
   wsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn;
-  constructor(wsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn) {
+  constructor(
+    read: WsMsgReader<Protocol>,
+    wsConnFactory: (bunws: Bun.ServerWebSocket<{}>) => WSConn,
+  ) {
     super((_) => new SWSEventRegister(), 'WebSocketRouter');
+    this.read = read;
     this.wsConnFactory = wsConnFactory;
   }
   add<
     Path extends RouteString,
-    MsgKind extends keyof WebSocketMessageMap,
-    Event extends keyof SWSHandlerMap<WSConn>,
-  >(path: Path, event: Event, msgKind: MsgKind, callback: SWSHandlerMap<WSConn, MsgKind>[Event]) {
+    MsgKind extends keyof Protocol,
+    Event extends keyof SWSHandlerMap<Protocol, WSConn>,
+  >(
+    path: Path,
+    event: Event,
+    msgKind: MsgKind,
+    callback: SWSHandlerMap<Protocol, WSConn, MsgKind>[Event],
+  ) {
     this.get(path).add(event, msgKind, callback);
     return this;
   }
@@ -105,7 +127,7 @@ export class WebSocketRouter<WSConn>
     let wsRegister = this;
     let websocket: Bun.WebSocketHandler<{ origin: URL }> = {
       async message(ws, message: Buffer<ArrayBuffer>) {
-        let decodedMsg = await read(new Blob([message]));
+        let decodedMsg = await wsRegister.read(new Blob([message]));
         debug(`Got message ${message.toString()} which decoded to `, decodedMsg);
         if (decodedMsg instanceof Error) {
           console.error(
@@ -115,7 +137,7 @@ export class WebSocketRouter<WSConn>
         }
 
         let path = ws.data.origin.pathname as `/${string}`;
-        let match: SWSEventRegister<WSConn> = wsRegister.get(path);
+        let match: SWSEventRegister<Protocol, WSConn> = wsRegister.get(path);
         let conn = wsRegister.wsConnFactory(ws);
         match.get('message', decodedMsg.kind).forEach((f) => f(conn, decodedMsg));
       },

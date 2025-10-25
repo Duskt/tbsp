@@ -30,7 +30,10 @@ export function File(path: string, preload = false) {
 
 export function PublicDirectory(basePath: string, preload = false, prefix = '') {
   basePath = basePath.endsWith('/') ? basePath.slice(0, basePath.length - 1) : basePath;
-  let app = new BaseApp<any>({
+  let app = new BaseApp<any, any>({
+    read: () => {
+      throw new Error('Never');
+    },
     wsConnFactory: () => {
       throw new Error("WebSocket shouldn't serve static files!!?");
     },

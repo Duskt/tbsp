@@ -1,25 +1,24 @@
 import { GenericMap } from './index.ts';
-import type { Register } from '../types.ts';
-import { type WebSocketMessageMap } from '../ws/protocol.ts';
+import type { Register, WsMsgProtocol } from '../types.ts';
 
 /** **WebSocketMessageRegister**
  * { 'global.queue': [anyA, anyB, anyC, ...], }
  */
-export class WebSocketMessageRegister<T extends { [K in keyof WebSocketMessageMap]: any }>
-  extends GenericMap<{ [K in keyof T]: T[K][] }>
+export class WebSocketMessageRegister<Protocol extends WsMsgProtocol>
+  extends GenericMap<{ [K in keyof Protocol]: Protocol[K][] }>
   implements Register
 {
   constructor() {
     super((_) => [], 'WebSocketMessageRegister');
   }
-  add<K extends keyof WebSocketMessageMap>(messageKind: K, handler: T[K]): this {
+  add<K extends keyof Protocol>(messageKind: K, handler: Protocol[K]): this {
     this.get(messageKind).push(handler);
     return this;
   }
   absorb(other: this) {
     this.keys().map((k) => this.get(k).concat(...other.get(k)));
   }
-  match(target: string): T[keyof T][] | undefined {
+  match(target: string): Protocol[keyof Protocol][] | undefined {
     // TODO: match global -> global.queue OR global.whatever
     return this.get(target as any);
   }

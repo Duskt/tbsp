@@ -3,11 +3,12 @@ import { HttpRouter, type HttpMethod, type HttpRouteHandler } from './register/h
 import { DEBUG_MODE } from './env.ts';
 import type { RouteString } from './route.ts';
 import { WebSocketRouter } from './ws/server.ts';
-import type { App, ServerWebSocketRegister } from './types.ts';
+import type { App, ServerWebSocketRegister, WsMsgProtocol, WsMsgReader } from './types.ts';
 
 type RouteHandler = RouterTypes.RouteHandler<string>;
 
-interface AppInitOptions<WSConn> {
+interface AppInitOptions<Protocol extends WsMsgProtocol, WSConn> {
+  read: WsMsgReader<Protocol>;
   wsConnFactory: (ws: Bun.ServerWebSocket<any>) => WSConn;
   logDebug?: boolean;
 }
@@ -17,13 +18,13 @@ interface AppInitOptions<WSConn> {
  * Uses method chaining to build a configuration object and promotes abstraction of RouteHandlers.
  * This is still missing features that might need to be implemented.
  */
-export class BaseApp<WSConn> implements App<WSConn> {
+export class BaseApp<Protocol extends WsMsgProtocol, WSConn> implements App<Protocol, WSConn> {
   httpRouter: HttpRouter;
-  wsRouter: WebSocketRouter<WSConn>;
+  wsRouter: WebSocketRouter<Protocol, WSConn>;
   logDebug: boolean;
-  constructor({ logDebug = DEBUG_MODE, wsConnFactory }: AppInitOptions<WSConn>) {
+  constructor({ read, logDebug = DEBUG_MODE, wsConnFactory }: AppInitOptions<Protocol, WSConn>) {
     this.httpRouter = new HttpRouter();
-    this.wsRouter = new WebSocketRouter(wsConnFactory);
+    this.wsRouter = new WebSocketRouter(read, wsConnFactory);
     this.logDebug = logDebug;
   }
 
@@ -65,7 +66,10 @@ export class BaseApp<WSConn> implements App<WSConn> {
     return this;
   }
 
-  websocket(path: RouteString, wsCallback: (ws: ServerWebSocketRegister<WSConn>) => void) {
+  websocket(
+    path: RouteString,
+    wsCallback: (ws: ServerWebSocketRegister<Protocol, WSConn>) => void,
+  ) {
     let reg = this.wsRouter.get(path);
     // allow returned value to override for more flexibility
     reg = wsCallback(reg) ?? reg;
@@ -102,16 +106,17 @@ export class BaseApp<WSConn> implements App<WSConn> {
   }
 }
 
-export class BunApp extends BaseApp<Bun.ServerWebSocket<{}>> {
-  constructor(init?: Omit<AppInitOptions<Bun.ServerWebSocket<never>>, 'wsConnFactory'>) {
-    super({ wsConnFactory: (x) => x, logDebug: init?.logDebug ?? DEBUG_MODE });
+export class BunApp<Protocol extends WsMsgProtocol> extends BaseApp<
+  Protocol,
+  Bun.ServerWebSocket<{}>
+> {
+  constructor(init: Omit<AppInitOptions<Protocol, Bun.ServerWebSocket<never>>, 'wsConnFactory'>) {
+    super({ read: init.read, wsConnFactory: (x) => x, logDebug: init.logDebug ?? DEBUG_MODE });
   }
-  static wrapWs<WSConn>(
-    wsConnFactory: (ws: Bun.ServerWebSocket<{}>) => WSConn,
-  ): new (init?: Omit<AppInitOptions<never>, 'wsConnFactory'>) => BaseApp<WSConn> {
-    class App extends BaseApp<WSConn> {
-      constructor(init?: Omit<AppInitOptions<never>, 'wsConnFactory'>) {
-        super({ wsConnFactory, logDebug: init?.logDebug ?? DEBUG_MODE });
+  static wrapWs<WSConn>(wsConnFactory: (ws: Bun.ServerWebSocket<{}>) => WSConn) {
+    class App<Protocol extends WsMsgProtocol> extends BaseApp<Protocol, WSConn> {
+      constructor(init: Omit<AppInitOptions<Protocol, never>, 'wsConnFactory'>) {
+        super({ read: init.read, wsConnFactory, logDebug: init.logDebug ?? DEBUG_MODE });
       }
     }
     return App;

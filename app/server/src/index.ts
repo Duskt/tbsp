@@ -12,6 +12,7 @@ import sql, {
 } from './db.ts';
 import queueManager from './queue.ts';
 import type { ServerWebSocket } from 'bun';
+import { read, type TbspWsMsgProtocol } from '@tbsp/web/tbsp';
 // drop_tables();
 createAllTables();
 const PORT = 9001;
@@ -23,7 +24,7 @@ const clients = new Set<ServerWebSocket<{}>>();
 // we'll override this with middleware in future to separate out auth
 const TbspApp = BunApp.wrapWs((x) => x);
 
-new TbspApp()
+new TbspApp<TbspWsMsgProtocol>({ read })
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
   .use(PublicDirectory(CLIROOT))

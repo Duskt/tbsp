@@ -1,48 +1,53 @@
 import { GenericMap } from '../register/index.ts';
 import { WebSocketMessageRegister } from '../register/ws.ts';
 import type { RouteString } from '../route.ts';
-import { type WebSocketMessage, write, type WebSocketMessageMap } from './protocol.ts';
-import type { ClientWebSocketController } from '../types.ts';
+import type { ClientWebSocketController, WsMsgProtocol } from '../types.ts';
 
-export type CWSEventMap<K extends keyof WebSocketMessageMap = never> = {
+export type CWSEventMap<Protocol extends WsMsgProtocol, K extends keyof Protocol = never> = {
   open: Event;
   close: CloseEvent;
-  message: MessageEvent<WebSocketMessageMap[K]>;
+  message: MessageEvent<Protocol[K]>;
   error: Event;
 };
 
 type EventListener<E> = (e: E) => void;
 
 type _OmitMessageCWSListenerMap = {
-  [K in keyof CWSEventMap as K extends 'message' ? never : K]: EventListener<CWSEventMap[K]>[];
+  [K in keyof CWSEventMap<never> as K extends 'message' ? never : K]: EventListener<
+    CWSEventMap<never>[K]
+  >[];
 };
 
-type CWSListenerMap = _OmitMessageCWSListenerMap & {
+type CWSListenerMap<Protocol extends WsMsgProtocol> = _OmitMessageCWSListenerMap & {
   message: WebSocketMessageRegister<{
-    [K in keyof WebSocketMessageMap]: EventListener<CWSEventMap<K>['message']>;
+    [K in keyof Protocol]: EventListener<CWSEventMap<Protocol, K>['message']>;
   }>;
 };
 
-export class CWSController implements ClientWebSocketController {
+export class CWSController<Protocol extends WsMsgProtocol>
+  implements ClientWebSocketController<Protocol>
+{
   ws: WebSocket;
   path: RouteString;
+  write: <K extends keyof Protocol>(msg: Protocol[K]) => Blob;
   messageRegister: WebSocketMessageRegister<{
-    [K in keyof WebSocketMessageMap]: EventListener<CWSEventMap<K>>[];
+    [K in keyof Protocol]: EventListener<CWSEventMap<Protocol, K>>[];
   }>;
   otherEventListeners: GenericMap<_OmitMessageCWSListenerMap>;
-  constructor(path: RouteString) {
+  constructor(path: RouteString, write: <K extends keyof Protocol>(msg: Protocol[K]) => Blob) {
     // let defaultFactory = (k: string) => k === 'message' ? new WebSocketMessageRegister() : [];
     // super(defaultFactory as any, "ClientWebSocketController");
     this.path = path;
+    this.write = write;
     this.ws = new WebSocket(path);
     this.messageRegister = new WebSocketMessageRegister();
     this.otherEventListeners = new GenericMap((_) => []);
   }
 
-  addEventListener<M extends keyof WebSocketMessageMap, K extends keyof CWSListenerMap>(
+  addEventListener<M extends keyof Protocol, K extends keyof CWSListenerMap<Protocol>>(
     event: K,
     msgKind: M,
-    callback: EventListener<CWSEventMap<M>[K]>,
+    callback: EventListener<CWSEventMap<Protocol, M>[K]>,
   ) {
     if (event === 'message') {
       this.messageRegister.get(msgKind).push(callback as any);
@@ -52,24 +57,24 @@ export class CWSController implements ClientWebSocketController {
     this.ws.addEventListener(event, callback);
   }
   add = this.addEventListener;
-  onmessage<M extends keyof WebSocketMessageMap>(
+  onmessage<M extends keyof Protocol>(
     kind: M,
-    callback: EventListener<CWSEventMap<M>['message']>,
+    callback: EventListener<CWSEventMap<Protocol, M>['message']>,
   ) {
     this.addEventListener('message', kind, callback);
   }
-  onopen(callback: EventListener<CWSEventMap['open']>) {
+  onopen(callback: EventListener<CWSEventMap<Protocol>['open']>) {
     this.addEventListener('open', null as never, callback);
   }
-  onclose(callback: EventListener<CWSEventMap['close']>) {
+  onclose(callback: EventListener<CWSEventMap<Protocol>['close']>) {
     this.addEventListener('close', null as never, callback);
   }
-  onerror(callback: EventListener<CWSEventMap['error']>) {
+  onerror(callback: EventListener<CWSEventMap<Protocol>['error']>) {
     this.addEventListener('error', null as never, callback);
   }
 
-  async send<Kind extends keyof WebSocketMessageMap>(data: WebSocketMessage<Kind>) {
-    this.ws.send(await write(data).arrayBuffer());
+  async send<Kind extends keyof Protocol>(data: Protocol[Kind]) {
+    this.ws.send(await this.write(data).arrayBuffer());
   }
 
   close() {

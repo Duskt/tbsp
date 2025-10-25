@@ -1,40 +1,44 @@
 import type { HttpMethod, HttpRouteHandler } from './register/http.ts';
 import type { GenericRouteMap } from './register/route.ts';
 import type { RouteString } from './route.ts';
-import type { WebSocketMessage, WebSocketMessageMap } from './ws/protocol.ts';
 
 export interface Register {
   add(...args: any[]): this;
   absorb(other: this): void;
 }
 
-export interface ClientWebSocketController {
+export type WsMsgProtocol = { [K: string]: object };
+export type WsMsgReader<Protocol extends WsMsgProtocol> = (
+  data: Blob,
+) => Promise<(Protocol[keyof Protocol] & { kind: keyof Protocol }) | Error>;
+
+export interface ClientWebSocketController<Protocol extends WsMsgProtocol> {
   ws: WebSocket;
   path: RouteString;
-  onmessage<K extends keyof WebSocketMessageMap>(
+  onmessage<K extends keyof Protocol>(
     kind: K,
-    listener: (e: MessageEvent<WebSocketMessageMap[K]>) => void,
+    listener: (e: MessageEvent<Protocol[K]>) => void,
   ): void;
   onopen(listener: (e: Event) => void): void;
   onclose(listener: (e: CloseEvent) => void): void;
   onerror(listener: (e: unknown) => void): void;
-  send<K extends keyof WebSocketMessageMap>(msg: WebSocketMessage<K>): void;
+  send<K extends keyof Protocol>(msg: Protocol[K]): void;
   close(): void;
 }
 
-export interface ServerWebSocketRegister<WSConn> extends Register {
+export interface ServerWebSocketRegister<Protocol extends WsMsgProtocol, WSConn> extends Register {
   onopen(callback: (ws: WSConn) => void): this;
   onclose(callback: (ws: WSConn) => void): this;
   onerror(callback: (ws: WSConn) => void): this;
-  onmessage<K extends keyof WebSocketMessageMap>(
+  onmessage<K extends keyof Protocol>(
     kind: K,
-    callback: (ws: WSConn, msg: WebSocketMessage<K>) => void,
+    callback: (ws: WSConn, msg: Protocol[K]) => void,
   ): this;
 }
 
 export type Router<T extends { [R: RouteString]: any }> = Register & GenericRouteMap<T>;
 
-export interface App<WSConn> {
+export interface App<Protocol extends WsMsgProtocol, WSConn> {
   route<M extends HttpMethod, P extends RouteString>(
     method: M,
     path: P,
@@ -47,7 +51,7 @@ export interface App<WSConn> {
   use(plugin: this): this;
   websocket<P extends RouteString>(
     path: P,
-    wsCallback: (ws: ServerWebSocketRegister<WSConn>) => void,
+    wsCallback: (ws: ServerWebSocketRegister<Protocol, WSConn>) => void,
   ): this;
   start(port: number): void;
 }
