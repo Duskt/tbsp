@@ -6,6 +6,11 @@
  * too strict on writing reusable implementations as a code practice.
  */
 
+import type { RouteString } from './route.ts';
+import { BaseApp } from './server.ts';
+import type { ClientWebSocketController } from './types.ts';
+import { CWSController } from './ws/client.ts';
+
 export const PROTOCOL_VERSION = 1;
 
 interface BaseWSMessage {
@@ -44,5 +49,22 @@ export async function read(raw: Blob): Promise<AnyWebSocketMessage | Error> {
     return JSON.parse(text);
   } catch (e) {
     return new Error(text);
+  }
+}
+
+type TbspWsConnection = Bun.ServerWebSocket<{}>;
+const clientWsConnFactory = (i: Bun.ServerWebSocket<{}>): TbspWsConnection => i;
+export class TbspApp extends BaseApp<TbspWsMsgProtocol, TbspWsConnection> {
+  constructor() {
+    super({ read, clientWsConnFactory });
+  }
+}
+
+export class TbspWebSocketClient
+  extends CWSController<TbspWsMsgProtocol>
+  implements ClientWebSocketController<TbspWsMsgProtocol>
+{
+  constructor(path: RouteString) {
+    super(path, write);
   }
 }

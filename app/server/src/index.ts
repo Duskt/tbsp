@@ -12,19 +12,14 @@ import sql, {
 } from './db.ts';
 import queueManager from './queue.ts';
 import type { ServerWebSocket } from 'bun';
-import { read, type TbspWsMsgProtocol } from '@tbsp/web/tbsp';
+import { TbspApp } from '@tbsp/web/tbsp';
 // drop_tables();
 createAllTables();
 const PORT = 9001;
 const CLIROOT = '../client/dist';
 const clients = new Set<ServerWebSocket<{}>>();
 
-// currently the type representing a single client WS connection is just the default type
-// provided by our implementation (Bun.serve), which is Bun.ServerWebSocket<Ctx>
-// we'll override this with middleware in future to separate out auth
-const TbspApp = BunApp.wrapWs((x) => x);
-
-new TbspApp<TbspWsMsgProtocol>({ read })
+new TbspApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
   .use(PublicDirectory(CLIROOT))
