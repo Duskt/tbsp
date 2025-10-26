@@ -44,6 +44,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@tbsp/mafia": "*",
+        "@tbsp/utils": "*",
         "@tbsp/web": "*",
         "bun": "^1.3.0",
         "postgres": "^3.4.7",

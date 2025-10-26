@@ -1,5 +1,6 @@
 import TBSPApp from '@tbsp/web/server.ts';
 import { File, PublicDirectory } from '@tbsp/web/middleware/static.ts';
+import { generateRandomName } from '@tbsp/utils/randomNameGenerator.ts';
 import sql, {
   createChatroomsTable,
   createMessageTable,
@@ -13,6 +14,7 @@ import sql, {
 import queueManager from './queue.ts';
 import { Cookie, type ServerWebSocket } from 'bun';
 import { getUniqueCookie } from './cookie.ts';
+import { cookieReader } from '@tbsp/web/middleware/cookie.ts';
 // drop_tables();
 createAllTables();
 const PORT = 9001;
@@ -25,9 +27,63 @@ new TBSPApp()
   .use(PublicDirectory(CLIROOT))
   .get('/*', await File(`${CLIROOT}/index.html`))
   .get('/cookie', async () => {
-    return new Response('hello worlds', {
-      headers: { 'Set-Cookie': `id=${await getUniqueCookie()}` },
+    let cookie = await getUniqueCookie();
+    let guestName = await generateRandomName();
+    console.log('First check');
+    await sql`
+    INSERT INTO users(
+      username,
+      passwordHash
+    ) VALUES (
+      ${guestName},
+      ${'N/A'}
+    )
+    `;
+    console.log('Second check');
+
+    let userId = (
+      await sql`
+    SELECT userid FROM users WHERE username = ${guestName}
+    `
+    )[0];
+    if (userId !== undefined) {
+      console.log(userId.userid);
+      await sql`
+    INSERT INTO cookies(
+      cookie,
+      userId
+    ) VALUES (
+      ${cookie},
+      ${userId.userid}
+    )
+    `;
+    }
+
+    return new Response(`hello ${guestName}`, {
+      headers: { 'Set-Cookie': `id=${cookie}` },
     });
+  })
+  .get('/cookieread', async (request) => {
+    let cookies = cookieReader(request);
+    if (cookies == null) {
+      return new Response(`${false}`);
+    }
+    let cookieList = cookies.split(';');
+    for (let cookiepair of cookieList) {
+      let x = cookiepair.split('=');
+      if (x[0] === 'id') {
+        const matches = await sql`
+        SELECT cookie from cookies where cookie = ${x[1] ?? ''}
+  `;
+        // Here we check if we have somehow made a pre-existing cookie
+        if (matches.length === 0) {
+          throw Error('INVALID COOKIE');
+        }
+        return new Response(`${true}`);
+      }
+    }
+    // if this return statement is not reached, then the appropriate cookie does note exist.
+    return new Response(`${false}`);
   })
   .websocket('/', (ws) =>
     ws

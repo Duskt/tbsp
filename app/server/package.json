@@ -16,6 +16,7 @@
   "dependencies": {
     "@tbsp/mafia": "*",
     "@tbsp/web": "*",
+    "@tbsp/utils": "*",
     "bun": "^1.3.0",
     "postgres": "^3.4.7"
   },

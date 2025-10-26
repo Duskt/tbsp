@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS games(
 export async function createCookieTable() {
   await sql`
 CREATE TABLE IF NOT EXISTS cookies(
-  cookie text primary key
+  cookie text primary key,
   userId UUID REFERENCES users(userId)
 )
   `;
@@ -99,22 +99,28 @@ export async function createAllTables() {
   // create game table
   await sql`
 CREATE TABLE IF NOT EXISTS games(
-  gameId UUID primary key
+  gameId UUID  DEFAULT gen_random_UUID(),
+  PRIMARY KEY(gameId)
+
 )
   `;
   // create users table
   await sql`
   CREATE TABLE IF NOT EXISTS users (
-    userId UUID PRIMARY KEY,
+    userId UUID DEFAULT gen_random_UUID(),
     username VARCHAR(16),
-    passwordHash TEXT
+    passwordHash TEXT,
+    PRIMARY KEY(userId)
+
   )
 `;
   // create chatroom table
   await sql`
 CREATE TABLE IF NOT EXISTS chatrooms (
-  chatroomId UUID PRIMARY KEY,
-  gameId UUID REFERENCES games(gameId)
+  chatroomId UUID DEFAULT gen_random_UUID(),
+  gameId UUID REFERENCES games(gameId),
+  PRIMARY KEY(chatroomId)
+
   )
 `;
   // create users in chatrooms table
@@ -189,7 +195,7 @@ export async function drop_tables() {
   chatrooms,
   messages,
   users,
-  games
+  games,
   cookies
   `;
 }

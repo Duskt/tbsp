@@ -3,6 +3,11 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "target": "esnext"
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmit": false,
+    "declaration": true,
+    "rewriteRelativeImportExtensions": true
   }
 }
