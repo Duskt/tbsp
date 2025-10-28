@@ -68,7 +68,7 @@ new TbspApp()
           SELECT messages.messageContent, users.username
           FROM messages
           JOIN users ON messages.userId = users.userId
-          WHERE messages.chatroomId = ${chatRoomId};
+          WHERE messages.chatRoomId = ${chatRoomId};
         `;
 
         messagesWithUser.forEach((m) => {
