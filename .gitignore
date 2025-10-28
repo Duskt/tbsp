@@ -47,7 +47,7 @@ package-lock.json
 client/*.local
 
 # Editor directories and files
-# .vscode is included: to overwrite locally, write in .git/info/exclude instead of here
+.vscode
 .idea
 *.suo
 *.ntvs*
