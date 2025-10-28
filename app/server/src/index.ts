@@ -63,21 +63,21 @@ new TbspApp()
         // get chatroomIds which include userId? For now we just have default
 
         const chatRoomId = '00000000-0000-0000-0000-000000000001';
-        const messages = await sql`SELECT * FROM messages WHERE chatroomId = ${chatRoomId};`;
 
-        // error handler does not catch errors in async code so we put in try-catch
-        try {
-          for (const message of messages) {
-            const user = await sql`SELECT * FROM users WHERE userId = ${message.userid} limit 1;`;
-            const outgoing = JSON.stringify({
-              username: user[0].username,
-              messageContent: message.messagecontent,
-            });
-            ws.send(outgoing);
-          }
-        } catch (error) {
-          console.log('error: ', error);
-        }
+        const messagesWithUser = await sql`
+          SELECT messages.messageContent, users.username
+          FROM messages
+          JOIN users ON messages.userId = users.userId
+          WHERE messages.chatroomId = ${chatRoomId};
+        `;
+
+        messagesWithUser.forEach((m) => {
+          const outgoing = JSON.stringify({
+            username: m.username,
+            messageContent: m.messageContent,
+          });
+          ws.send(outgoing);
+        });
       })
       .onclose((ws) => {
         console.log('Client disconnected');
