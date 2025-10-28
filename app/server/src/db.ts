@@ -26,152 +26,69 @@ export default sql;
 
 export async function exampleQuery(age: number) {
   const matches = await sql`
-	SELECT username FROM users WHERE age = ${age}
-    `;
+	  SELECT username FROM users WHERE age = ${age};
+  `;
   console.log(matches);
   return matches;
 }
 
-// create table for messages
-export async function createMessageTable() {
-  await sql`
-  CREATE TABLE IF NOT EXISTS messages (
-    messageId SERIAL PRIMARY KEY,
-    chatRoomId UUID REFERENCES chatrooms(chatroomId),
-    timestamp timestamp,
-    userId uuid REFERENCES users(userId),
-    messageContent VARCHAR(512)
-  )
-`;
+export async function runMigrations() {
+  const sqlFile = await Bun.file('./migrations/initial.sql').text();
+  await sql.unsafe(sqlFile);
 }
 
-// create table for users
-export async function createUserTable() {
-  await sql`
-  CREATE TABLE IF NOT EXISTS users (
-    userId UUID PRIMARY KEY,
-    username VARCHAR(16),
-    passwordHash TEXT
-  )
-`;
-}
-
-// create chatroom table for chatrooms
-export async function createChatroomsTable() {
-  await sql`
-CREATE TABLE IF NOT EXISTS chatrooms (
-  chatroomId UUID PRIMARY KEY,
-  gameId UUID REFERENCES games(gameId)
-  )
-`;
-}
-
-// create chatroom table for users in chatroom
-export async function createUsersInChatroomTable() {
-  await sql`
-CREATE TABLE IF NOT EXISTS usersInChatroom (
-  chatroomId UUID REFERENCES chatrooms(chatroomId),
-  userId UUID REFERENCES users(userId)
-  )
-`;
-}
-
-// create gameroom table for users in gameroom
-export async function createGameRoomTable() {
-  await sql`
-CREATE TABLE IF NOT EXISTS games(
-  gameId UUID primary key
-)
-  `;
-}
-export async function createAllTables() {
-  // create game table
-  await sql`
-CREATE TABLE IF NOT EXISTS games(
-  gameId UUID primary key
-)
-  `;
-  // create users table
-  await sql`
-  CREATE TABLE IF NOT EXISTS users (
-    userId UUID PRIMARY KEY,
-    username VARCHAR(16),
-    passwordHash TEXT
-  )
-`;
-  // create chatroom table
-  await sql`
-CREATE TABLE IF NOT EXISTS chatrooms (
-  chatroomId UUID PRIMARY KEY,
-  gameId UUID REFERENCES games(gameId)
-  )
-`;
-  // create users in chatrooms table
-  await sql`
-CREATE TABLE IF NOT EXISTS usersInChatroom (
-  chatroomId UUID REFERENCES chatrooms(chatroomId),
-  userId UUID REFERENCES users(userId)
-  )
-`;
-  // create messages table
-  await sql`
-CREATE TABLE IF NOT EXISTS messages (
-  messageId SERIAL PRIMARY KEY,
-  chatRoomId UUID REFERENCES chatrooms(chatroomId),
-  timestamp timestamp,
-  userId uuid REFERENCES users(userId),
-  messageContent VARCHAR(512)
-)
-`;
-}
 // create some fake data so we can use the databases without errors
 export async function createFakeData() {
-  let chatRoomId = '00000000-0000-0000-0000-000000000001';
-  let userId = '00000000-0000-0000-0000-000000000001';
-  let gameId = 0;
+  const userId = '00000000-0000-0000-0000-000000000001';
+  const username = 'Mr. wiggles';
+  const passwordHash = 'password';
 
   // create fake user
   try {
     await sql`
-    INSERT INTO users (
-      userId,
-      username,
-      passwordHash
-    ) VALUES (
-      ${userId},
-      ${'Mr. wiggles'},
-      ${'password'}
-    )
+      INSERT INTO users (
+        userId,
+        username,
+        passwordHash
+      ) VALUES (
+        ${userId},
+        ${username},
+        ${passwordHash}
+      );
     `;
   } catch (error) {
     console.error('Failed to create user:', error);
   }
 
+  const chatRoomId = '00000000-0000-0000-0000-000000000001';
+  const gameId = '00000000-0000-0000-0000-000000000001';
+
   // create fake chatroom
   try {
     await sql`
-    INSERT INTO chatrooms (
-      chatroomId,
-      gameId
-    ) VALUES (
-      ${chatRoomId},
-      ${gameId}
-    )
+      INSERT INTO chatrooms (
+        chatroomId,
+        gameId
+      ) VALUES (
+        ${chatRoomId},
+        ${gameId}
+      );
     `;
   } catch (error) {
     console.error('Failed to create chatroom:', error);
   }
+
   console.log('created? fake data.');
 }
 
-export async function drop_tables() {
+export async function dropTables() {
   await sql`
-  DROP TABLE IF EXISTS
-  usersInChatRoom,
-  chatrooms,
-  messages,
-  users,
-  games
+    DROP TABLE IF EXISTS
+    usersInChatRoom,
+    chatrooms,
+    messages,
+    users,
+    games;
   `;
 }
 
