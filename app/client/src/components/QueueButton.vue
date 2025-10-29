@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { type Theme } from '@tbsp/mafia/theme.ts'
-import palette from '../style.ts'
-import ws from '../ws'
+import { type Theme } from '@tbsp/mafia/theme.ts';
+import { ref } from 'vue';
+import { palette } from '../style.ts';
+import { ws } from '../ws';
 
-const { theme } = defineProps<{ theme: Theme }>()
-let playersQueued = ref(0)
+const { theme } = defineProps<{ theme: Theme }>();
+
+const playersQueued = ref<number>(0);
 
 function joinQueue() {
-  ws.send({ kind: "global.queue", protocol_version: 1, theme: theme.id })
+  ws.send({ kind: 'global.queue', protocol_version: 1, theme: theme.id });
 }
 </script>
 

@@ -1,10 +1,11 @@
 <script setup>
+import { useRouter } from 'vue-router';
 import ChatRoom from '../components/ChatRoom.vue';
 import GameInfo from '../components/GameInfo.vue';
 import useWS from '../components/useWS.ts';
-import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
 const { ws } = useWS('/messages', (msg) => {
   if (!msg.data.startsWith('You')) {
     console.warn('Unknown WS message:', msg.data);
@@ -12,6 +13,7 @@ const { ws } = useWS('/messages', (msg) => {
   }
   router.push('/chatroom');
 });
+
 console.log(ws);
 </script>
 

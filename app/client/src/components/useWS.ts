@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onUnmounted } from 'vue';
 
 /* FOR USE IN VIEWS - you don't want more than one WS connection per client! (?)
  * Using this 'composable' function in a component will allow access
@@ -8,11 +8,11 @@ export default function useWS(
   path: string = '/',
   onmessage: (msg: MessageEvent) => void = () => {},
 ) {
-  const ws = new WebSocket(path)
-  ws.onmessage = onmessage
+  const ws = new WebSocket(path);
+  ws.onmessage = onmessage;
   onUnmounted(() => {
-    ws.close()
-  })
+    ws.close();
+  });
 
-  return { ws }
+  return { ws };
 }

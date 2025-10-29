@@ -1,6 +1,6 @@
-import themes, { Theme } from '@tbsp/mafia/theme.ts';
-import type { ServerWebSocket } from 'bun';
+import { type Theme, defaultThemes } from '@tbsp/mafia/theme.ts';
 import type { WebSocketMessageMap } from '@tbsp/web/tbsp';
+import type { ServerWebSocket } from 'bun';
 
 class Queue<WSConn> {
   theme: Theme;
@@ -47,5 +47,6 @@ class QueueManager {
   };
 }
 
-const queueManager = new QueueManager(themes);
+const queueManager = new QueueManager(defaultThemes);
+
 export default queueManager;

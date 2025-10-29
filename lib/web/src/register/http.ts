@@ -1,8 +1,8 @@
-import { GenericMap } from './index.ts';
-import { GenericRouteMap } from './route.ts';
 import type { RouterTypes } from 'bun';
 import type { RouteString } from '../route.ts';
 import type { Register } from '../types.ts';
+import { GenericMap } from './index.ts';
+import { GenericRouteMap } from './route.ts';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'; // I might be missing an API type library
 

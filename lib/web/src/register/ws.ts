@@ -1,5 +1,5 @@
-import { GenericMap } from './index.ts';
 import type { Register, WsMsgProtocol } from '../types.ts';
+import { GenericMap } from './index.ts';
 
 /** **WebSocketMessageRegister**
  * { 'global.queue': [anyA, anyB, anyC, ...], }

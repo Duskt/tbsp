@@ -1,10 +1,11 @@
 <script setup>
+import { useRouter } from 'vue-router';
 import ChatBox from '../components/chat/ChatBox.vue';
 import ChatSelectionBar from '../components/chat/ChatSelectionBar.vue';
 import useWS from '../components/useWS.ts';
-import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
 const { ws } = useWS('/messages', (msg) => {
   if (!msg.data.startsWith('You')) {
     console.warn('Unknown WS message:', msg.data);

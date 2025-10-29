@@ -34,17 +34,21 @@ new TbspApp()
         try {
           await sql`INSERT INTO messages (
             chatroomId,
-            timestamp,
             userId,
-            messageContent
+            messageContent,
+            timestamp
           ) VALUES (
             ${chatRoomId},
-            NOW(),
             ${userId},
-            ${message.msg}
+            ${message.msg},
+            NOW()
           )`;
-          const user = await sql`SELECT * FROM users WHERE userId = ${userId} limit 1;`;
-          const outgoing = JSON.stringify({ username: user[0].username, messageContent: message });
+          const [user] = await sql`SELECT * FROM users WHERE userId = ${userId} limit 1;`;
+          if (!user) {
+            console.error('User not found for message:', message);
+            return;
+          }
+          const outgoing = JSON.stringify({ username: user.username, messageContent: message });
           // for now, I will just send to all clients but really should filter clients for the right chatrooms/gameIDs?
           // Or could handle client-side
           for (const client of clients) {

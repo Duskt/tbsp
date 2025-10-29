@@ -1,31 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { User } from '@tbsp/mafia/user.ts';
-import { Message } from '@tbsp/mafia/message.ts';
 import InputBox from '../chat/InputBox.vue';
-// Unique ID counter
 
-let id = 0;
-const dayTime = ref(true);
-const new_message = ref('');
-const chat_box = ref([{ id: id++, text: 'Created chatroom', username: 'LOBBY' }]);
 const { ws } = defineProps<{ ws: WebSocket }>();
 
-// this function receives a message from the server and updates the local chat_box array
+const id = ref<number>(0);
+const dayTime = ref<boolean>(true);
+const newMessage = ref<string>('');
+const chatBox = ref<{ id: number; text: string; username: string }[]>([
+  { id: id.value++, text: 'Created chatroom', username: 'LOBBY' },
+]);
+
+// this function receives a message from the server and updates the local chatBox array
 ws.onmessage = (event) => {
   const { username, messageContent } = JSON.parse(event.data);
-  chat_box.value.push({ id: id++, text: messageContent, username: username });
+  chatBox.value.push({ id: id.value++, text: messageContent, username: username });
 };
+
 // to call if ws is broken?
 async function requestMessages() {
-  ws.send(JSON.stringify({ id: id }));
+  ws.send(JSON.stringify({ id: id.value }));
 }
 </script>
 
 <template>
   <div class="chat-box">
     <ul class="chat-messages">
-      <li v-for="message in chat_box" :key="message.id" class="chat-message">
+      <li v-for="message in chatBox" :key="message.id" class="chat-message">
         {{ message.username }}: {{ message.text }}
       </li>
     </ul>
@@ -42,8 +43,8 @@ async function requestMessages() {
   padding: 1rem;
   /* box-sizing: border-box; */
   background-color: #3d3d3d;
-
-  flex: 1; /* fill remaining space */
+  /* fill remaining space */
+  flex: 1;
   overflow-y: auto;
 }
 

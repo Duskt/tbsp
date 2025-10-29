@@ -1,7 +1,7 @@
-interface ThemeProperties {
+type ThemeProperties = {
   id: string;
   name: string;
-}
+};
 
 /*
 /* A theme specifies the factions and role list present in a Mafia game. It can even
@@ -19,5 +19,4 @@ export class Theme implements ThemeProperties {
 const vanilla = new Theme({ id: 'vanilla', name: 'Vanilla' });
 const classic = new Theme({ id: 'classic', name: 'Classic' });
 
-const defaultThemes = [vanilla, classic];
-export default defaultThemes;
+export const defaultThemes = [vanilla, classic];
