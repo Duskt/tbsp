@@ -33,7 +33,7 @@ export async function exampleQuery(age: number) {
 }
 
 export async function runMigrations() {
-  const sqlFile = await Bun.file('./migrations/initial.sql').text();
+  const sqlFile = await Bun.file('./src/migrations/initial.sql').text();
   await sql.unsafe(sqlFile);
 }
 
