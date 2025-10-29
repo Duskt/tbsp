@@ -1,29 +1,22 @@
-import { BunApp } from '@tbsp/web';
 import { File, PublicDirectory } from '@tbsp/web/middleware';
-import sql, {
-  createChatroomsTable,
-  createMessageTable,
-  createUserTable,
-  createUsersInChatroomTable,
-  createFakeData,
-  createGameRoomTable,
-  drop_tables,
-  createAllTables,
-} from './db.ts';
-import queueManager from './queue.ts';
-import type { ServerWebSocket } from 'bun';
 import { TbspApp } from '@tbsp/web/tbsp';
-// drop_tables();
-createAllTables();
+import type { ServerWebSocket } from 'bun';
+import sql, { runMigrations } from './db.ts';
+import queueManager from './queue.ts';
+
+// dropTables();
+runMigrations();
+
 const PORT = 9001;
-const CLIROOT = '../client/dist';
+const CLI_ROOT = '../client/dist';
+
 const clients = new Set<ServerWebSocket<{}>>();
 
 new TbspApp()
   // HTTP Routing is handled clientside ('Single Page Application' paradigm)
   // so we only need to provide index and assets
-  .use(PublicDirectory(CLIROOT))
-  .get('/*', File(`${CLIROOT}/index.html`))
+  .use(PublicDirectory(CLI_ROOT))
+  .get('/*', File(`${CLI_ROOT}/index.html`))
   .websocket('/', (register) =>
     register
       .onopen((ws) => console.log(`Got WS connection from ${ws.remoteAddress}`))
@@ -40,17 +33,17 @@ new TbspApp()
 
         try {
           await sql`INSERT INTO messages (
-      chatroomId,
-      timestamp,
-      userId,
-      messageContent
-    ) VALUES (
-      ${chatRoomId},
-      NOW(),
-      ${userId},
-      ${message.msg}
-    )`;
-          const user = await sql`SELECT * FROM users WHERE userId = ${userId} `;
+            chatroomId,
+            timestamp,
+            userId,
+            messageContent
+          ) VALUES (
+            ${chatRoomId},
+            NOW(),
+            ${userId},
+            ${message.msg}
+          )`;
+          const user = await sql`SELECT * FROM users WHERE userId = ${userId} limit 1;`;
           const outgoing = JSON.stringify({ username: user[0].username, messageContent: message });
           // for now, I will just send to all clients but really should filter clients for the right chatrooms/gameIDs?
           // Or could handle client-side
@@ -69,22 +62,22 @@ new TbspApp()
         clients.add(ws);
         // get chatroomIds which include userId? For now we just have default
 
-        let chatRoomId = '00000000-0000-0000-0000-000000000001';
-        let messages = await sql`SELECT * FROM messages WHERE chatroomId = ${chatRoomId}`;
+        const chatRoomId = '00000000-0000-0000-0000-000000000001';
 
-        // error handler does not catch errors in async code so we put in try-catch
-        try {
-          for (const message of messages) {
-            const user = await sql`SELECT * FROM users WHERE userId = ${message.userid} `;
-            const outgoing = JSON.stringify({
-              username: user[0].username,
-              messageContent: message.messagecontent,
-            });
-            ws.send(outgoing);
-          }
-        } catch (error) {
-          console.log('error: ', error);
-        }
+        const messagesWithUser = await sql`
+          SELECT messages.messageContent, users.username
+          FROM messages
+          JOIN users ON messages.userId = users.userId
+          WHERE messages.chatRoomId = ${chatRoomId};
+        `;
+
+        messagesWithUser.forEach((m) => {
+          const outgoing = JSON.stringify({
+            username: m.username,
+            messageContent: m.messageContent,
+          });
+          ws.send(outgoing);
+        });
       })
       .onclose((ws) => {
         console.log('Client disconnected');
