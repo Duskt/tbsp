@@ -11,11 +11,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-      "target": "es2020",
-      "module": "nodenext",
-      "moduleResolution": "nodenext",
-      "noEmit": false,
-      "declaration": true,
-      "rewriteRelativeImportExtensions": true
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmit": false,
+    "declaration": true,
+    "rewriteRelativeImportExtensions": true
   }
 }

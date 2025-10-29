@@ -15,7 +15,6 @@
   "extends": "../../tsconfig.json",
   "include": ["./src/**/*"],
   "compilerOptions": {
-
     "target": "esnext", // No transpilation; largely irrelevant.
     "lib": ["ESNext"],
 
@@ -24,6 +23,6 @@
 
     // Native TypeScript. No declarations, no JavaScript.
     "noEmit": true,
-    "allowImportingTsExtensions": true, // (requires noEmit)
+    "allowImportingTsExtensions": true // (requires noEmit)
   }
 }

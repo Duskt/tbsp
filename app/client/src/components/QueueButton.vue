@@ -9,7 +9,7 @@ const { theme } = defineProps<{ theme: Theme }>();
 const playersQueued = ref<number>(0);
 
 function joinQueue() {
-  ws.send({ kind: 'global.queue', protocol_version: 1, theme: theme.id });
+  ws.send({ kind: 'global.queue', protocolVersion: 1, theme: theme.id });
 }
 </script>
 

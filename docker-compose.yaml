@@ -7,11 +7,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,7 +31,7 @@ services:
       - path: ./.env
         required: false
     ports:
-      - "9001:9001"
+      - '9001:9001'
     depends_on:
       - tbsp-database
     volumes:
@@ -43,7 +43,7 @@ services:
         # package.json edits (it's in bind mount) rebuild the container
         - action: rebuild
           path: ./
-          include: "package.json"
+          include: 'package.json'
         # Issues:
         # ./lib packages aren't rebuild and reinstalled for use on client/server
         - action: sync+restart

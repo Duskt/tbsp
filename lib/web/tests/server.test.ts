@@ -1,4 +1,4 @@
-import { test, describe, expect, expectTypeOf, beforeAll } from 'bun:test';
+import { beforeAll, describe, expect, expectTypeOf, test } from 'bun:test';
 import { BaseApp } from '../src/server.ts';
 import type { ServerWebSocketRegister } from '../src/types.ts';
 import { SWSEventRegister } from '../src/ws/server.ts';

@@ -13,6 +13,7 @@
     "dev": "bun run --cwd=./app/client build; bun run --cwd=./app/server src/index.ts;",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:imports": "grep -Er --include=*.ts --include=*.vue --exclude-dir=node_modules --exclude-dir=dist '\\w+\\.js'",
+    "format": "prettier --write .",
     "docker:up": "docker-compose up -d --build",
     "docker:down": "docker-compose down",
     "docker:dev": "docker compose watch dev",
@@ -27,5 +28,8 @@
     "@arethetypeswrong/cli": "^0.18.2",
     "prettier": "3.6.2",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "prettier-plugin-organize-imports": "^4.3.0"
   }
 }
