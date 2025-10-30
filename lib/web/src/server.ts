@@ -1,8 +1,7 @@
 import type { RouterTypes } from 'bun';
-import { HttpRouter, type HttpMethod, type HttpRouteHandler } from './register/http.ts';
 import { DEBUG_MODE } from './env.ts';
+import { HttpRouter, type HttpMethod, type HttpRouteHandler } from './register/http.ts';
 import type { RouteString } from './route.ts';
-import { WebSocketRouter } from './ws/server.ts';
 import type {
   App,
   ClientWSConnection,
@@ -10,6 +9,7 @@ import type {
   WsMsgProtocol,
   WsMsgReader,
 } from './types.ts';
+import { WebSocketRouter } from './ws/server.ts';
 
 type RouteHandler = RouterTypes.RouteHandler<string>;
 

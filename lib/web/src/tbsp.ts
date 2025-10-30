@@ -14,7 +14,7 @@ import { CWSController } from './ws/client.ts';
 export const PROTOCOL_VERSION = 1;
 
 interface BaseWSMessage {
-  protocol_version: number;
+  protocolVersion: number;
   kind: string;
 }
 

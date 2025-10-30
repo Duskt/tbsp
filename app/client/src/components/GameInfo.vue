@@ -1,18 +1,18 @@
-<script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-const day = ref(1);
-const role = ref('MAFIA');
-const players = ref(16);
-const end_time = ref(Date.now() + 5 * 60 * 1000);
-const now = ref(Date.now());
+const day = ref<number>(1);
+const role = ref<string>('MAFIA');
+const players = ref<number>(16);
+const endTime = ref<number>(Date.now() + 5 * 60 * 1000);
+const now = ref<number>(Date.now());
 
-let intervalId = null;
+let intervalId: number | NodeJS.Timeout;
 
 onMounted(() => {
   intervalId = setInterval(() => {
     now.value = Date.now();
-    if (now.value >= end_time.value) {
+    if (now.value >= endTime.value) {
       clearInterval(intervalId);
     }
   }, 1000);
@@ -23,14 +23,14 @@ onUnmounted(() => {
 });
 
 // Time remaining in seconds
-const time_left = computed(() => {
-  const diff = end_time.value - now.value;
+const timeLeft = computed(() => {
+  const diff = endTime.value - now.value;
   return diff > 0 ? Math.floor(diff / 1000) : 0;
 });
 
-function show_time() {
-  let minute = Math.floor(time_left.value / 60);
-  let second = time_left.value % 60;
+function showTime() {
+  let minute = Math.floor(timeLeft.value / 60);
+  let second = timeLeft.value % 60;
   return `${String(minute).padStart(1, '0')}:${String(second).padStart(2, '0')}`;
 }
 </script>
@@ -42,7 +42,7 @@ function show_time() {
       <p>{{ role }}</p>
     </div>
     <p>Day: {{ day }}</p>
-    <p>Time until nightfall: {{ show_time() }}</p>
+    <p>Time until nightfall: {{ showTime() }}</p>
     <p>Players remaining: {{ players }}</p>
   </div>
 </template>

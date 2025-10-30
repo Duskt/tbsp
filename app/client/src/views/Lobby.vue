@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import QueueButton from '../components/QueueButton.vue'
-import themes from '@tbsp/mafia/theme.ts'
-import ws from '../ws'
-const router = useRouter()
+import themes from '@tbsp/mafia/theme';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import QueueButton from '../components/QueueButton.vue';
+import { ws } from '../ws';
+
+const router = useRouter();
 
 onMounted(() => {
-ws.onmessage('global.queue', (e) => {
-  console.log(e.data);
-  router.push('/chatroom')
-})
-})
+  ws.onmessage('global.queue', (e) => {
+    console.log(e.data);
+    router.push('/chatroom');
+  });
+});
 </script>
 
 <template>

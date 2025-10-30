@@ -1,8 +1,8 @@
 import postgres from 'postgres';
 
 const database = import.meta.env.TBSP_DBNAME || 'tbsp';
-const pg_user = import.meta.env.TBSP_DBUSER || import.meta.env.USER || 'postgres';
-const pg_pass = import.meta.env.TBSP_DBPASS || (pg_user === 'postgres' ? 'postgres' : undefined);
+const pgUser = import.meta.env.TBSP_DBUSER || import.meta.env.USER || 'postgres';
+const pgPass = import.meta.env.TBSP_DBPASS || (pgUser === 'postgres' ? 'postgres' : undefined);
 const host = import.meta.env.TBSP_DBHOST || 'localhost';
 const port = Number(import.meta.env.TBSP_DBPORT) || 5432;
 
@@ -12,8 +12,8 @@ try {
     host,
     port,
     database,
-    username: pg_user,
-    password: pg_pass,
+    username: pgUser,
+    password: pgPass,
   });
 } catch (e) {
   // TODO: This error catch doesn't work (asynchronous callback)

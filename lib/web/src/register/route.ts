@@ -1,5 +1,5 @@
-import { GenericMap } from './index.ts';
 import { Route, type RouteString } from '../route.ts';
+import { GenericMap } from './index.ts';
 
 /** RouteRegister<T>
  * T is literally anything, the value which a route (as a key) corresponds to.

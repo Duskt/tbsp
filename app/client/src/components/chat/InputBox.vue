@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from 'vue'
-// Unique ID counter
-let id = 0
-const dayTime = ref(true)
-const new_message = ref('')
-const chat_box = ref([{ id: id++, text: 'OGC' }])
+import { ref } from 'vue';
 
-const { ws } = defineProps<{ ws: WebSocket }>()
+const { ws } = defineProps<{ ws: WebSocket }>();
+
+const id = ref<number>(0);
+const dayTime = ref<boolean>(true);
+const newMessage = ref<string>('');
+const chatBox = ref([{ id: id.value++, text: 'OGC' }]);
 
 // function sends the chat message to the server
-function send_message() {
+function sendMessage() {
   if (ws.readyState === WebSocket.OPEN) {
-    ws.send(new_message.value)
-    new_message.value = ''
+    ws.send(newMessage.value);
+    newMessage.value = '';
   } else {
-    console.warn('WebSocket not ready', ws.readyState)
+    console.warn('WebSocket not ready', ws.readyState);
     ws.onopen = () => {
-      ws.send(new_message.value)
-    }
+      ws.send(newMessage.value);
+    };
   }
 }
 </script>
 
 <template>
   <div class="input-box">
-    <form v-if="dayTime" @submit.prevent="send_message" class="chat-input">
-      <input v-model="new_message" required placeholder="Start typing..." />
+    <form v-if="dayTime" @submit.prevent="sendMessage" class="chat-input">
+      <input v-model="newMessage" required placeholder="Start typing..." />
     </form>
   </div>
 </template>

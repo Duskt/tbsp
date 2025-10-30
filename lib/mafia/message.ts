@@ -1,5 +1,5 @@
-import { User } from './user.ts';
 type ID = number;
+
 export class Message {
   userId: ID;
   body: string;

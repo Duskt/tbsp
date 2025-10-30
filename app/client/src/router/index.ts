@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LobbyView from '../views/Lobby.vue';
 import GameView from '../views/GameRoom.vue';
+import LobbyView from '../views/Lobby.vue';
 
 console.log(GameView);
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -20,5 +20,3 @@ const router = createRouter({
     },
   ],
 });
-
-export default router;
